@@ -25,6 +25,8 @@ Array.prototype.unique = function() {
 };
 
 const PSIZE = 10
+let NEXT_ENTITY_ID = 0;
+let entities = {};
 
 const CT = {
     CircleRenderer: {
@@ -37,15 +39,24 @@ const CT = {
             acc:  "Vector"
         }
     },
+    HasTarget: {
+        name: "HasTarget",
+        fields: {
+            target_id: "ID",
+        }
+    },
+    IsOre: {
+        name: "IsOre"
+    },
 };
 
 const EC = {
     "CircleRenderer": [],
     "HasVelocity": [],
+    "HasTarget": [],
+    "IsOre": [],
 };
 
-
-let NEXT_ENTITY_ID = 0;
 
 class Entity {
     constructor(x, y, components){
@@ -55,7 +66,6 @@ class Entity {
             this.add_component(component)
         }
     }
-
 
     add_component(component){
         // console.log(component)
@@ -75,6 +85,9 @@ class Entity {
                 case "Vector":
                     this[key] = createVector(0,0)
                     break;
+                case "ID":
+                    this[key] = null
+                    break;
                 default:
                     console.log("Missing handler for ", value)
                     break;
@@ -85,7 +98,8 @@ class Entity {
 
 function make_ore(x, y){
     e = new Entity(x,y, [
-        CT.CircleRenderer
+        CT.CircleRenderer,
+        CT.IsOre
     ])
     entities[e.id] = e;
 }
@@ -93,12 +107,11 @@ function make_ore(x, y){
 function make_ship(x,y){
     e = new Entity(x,y, [
         CT.HasVelocity,
-        CT.CircleRenderer
+        CT.CircleRenderer,
+        CT.HasTarget
     ])
     entities[e.id] = e;
 }
-
-let entities = {};
 
 function setup() {
   createCanvas(400, 450);
@@ -113,12 +126,20 @@ function setup() {
   print(entities)
 }
 
-function for_components(cmps, cb){
+function distance(a, b){
+    return dist(a.x, a.y, b.x, b.y)
+}
+
+function find_matching_ids(cmps){
     let ids = [];
     for(let cmp of cmps){
         ids = ids.concat(EC[cmp.name]).unique()
     }
+    return ids;
+}
 
+function for_components(cmps, cb){
+    let ids = find_matching_ids(cmps)
     for(let id of ids){
         e = entities[id];
         if(e == null || e == undefined){
@@ -129,8 +150,47 @@ function for_components(cmps, cb){
     }
 }
 
+function find_closest_with(cmp, position){
+    let ids = find_matching_ids([cmp])
+    let closest = null;
+    for(let id of ids){
+        e = entities[id];
+        if(closest == null){
+            closest = e.id
+            continue;
+        }
+        if(distance(position, e.pos) < distance(position, closest.pos)){
+            closest = e.id
+            continue;
+        }
+    }
+    return closest;
+}
+
 function draw() {
     background(0);
+
+    // find target
+    for_components([CT.HasTarget], entity => {
+        if(entity.target_id != null) return
+        let match = find_closest_with(CT.IsOre)
+        if(match == null) return;
+        entity.target_id = match
+    });
+
+    // move to target if one exists
+    for_components([CT.HasTarget], entity => {
+        if(entity.target_id == null) return
+        target = entities[entity.target_id]
+        if(target == null) {
+            entity.target_id = null;
+            return;
+        }
+
+        SPEED = 0.5;
+        let direction = v_sub(target.pos, entity.pos).normalize().mult(SPEED)
+        entity.pos.add(direction)
+    });
 
     // process accel
     for_components([CT.HasVelocity], entity => {
