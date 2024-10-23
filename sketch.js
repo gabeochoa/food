@@ -36,7 +36,6 @@ const CT = {
         name: "HasVelocity",
         fields: {
             vel:  "Vector",
-            acc:  "Vector"
         }
     },
     HasTarget: {
@@ -81,18 +80,19 @@ class Entity {
 
     add_component_fields(component){
         for (const [key, value] of Object.entries(component.fields)) {
-            let field_name = component.name + "_" + key;
+            let fields = {};
             switch(value){
                 case "Vector":
-                    this[field_name] = createVector(0,0)
+                    fields[key] = createVector(0,0)
                     break;
                 case "ID":
-                    this[field_name] = null
+                    fields[key] = null
                     break;
                 default:
                     console.log("Missing handler for ", value)
                     break;
             }
+            this[component.name] = fields;
         }
     }
 }
@@ -147,7 +147,10 @@ function for_components(cmps, cb){
             // console.warn("Entity ", id, " not found")
             continue;
         }
-        cb(e)
+        let components = cmps.map(cmp => {
+            return e[cmp.name]
+        })
+        cb(e, ...components)
     }
 }
 
@@ -172,19 +175,19 @@ function draw() {
     background(0);
 
     // find target
-    for_components([CT.HasTarget], entity => {
-        if(entity.target_id != null) return
+    for_components([CT.HasTarget], (entity, ht) => {
+        if(ht.target_id != null) return
         let match = find_closest_with(CT.IsOre)
         if(match == null) return;
-        entity.target_id = match
+        ht.target_id = match
     });
 
     // move to target if one exists
-    for_components([CT.HasTarget], entity => {
-        if(entity.target_id == null) return
-        target = entities[entity.target_id]
+    for_components([CT.HasTarget], (entity, ht) => {
+        if(ht.target_id == null) return
+        target = entities[ht.target_id]
         if(target == null) {
-            entity.target_id = null;
+            ht.target_id = null;
             return;
         }
 
@@ -194,9 +197,8 @@ function draw() {
     });
 
     // process accel
-    for_components([CT.HasVelocity], entity => {
-        entity.vel.add(entity.acc.copy().div(10))
-        entity.pos.add(entity.vel)
+    for_components([CT.HasVelocity], (entity, hv) => {
+        entity.pos.add(hv.vel)
     });
 
     // render_circles();
