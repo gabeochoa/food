@@ -45,7 +45,10 @@ const CT = {
         }
     },
     IsOre: {
-        name: "IsOre"
+        name: "IsOre",
+        fields: {
+            type: "OreType",
+        }
     },
 };
 
@@ -56,6 +59,14 @@ const EC = {
     "IsOre": [],
 };
 
+
+function randomOre(){
+    const ores = [
+        "iron",
+    ];
+    const index = Math.floor(Math.random() * ores.length);
+    return ores[index]
+}
 
 class Entity {
     constructor(x, y, components){
@@ -88,8 +99,11 @@ class Entity {
                 case "ID":
                     fields[key] = null
                     break;
+                case "OreType":
+                    fields[key] = randomOre();
+                    break
                 default:
-                    console.log("Missing handler for ", value)
+                    console.warn("Missing handler for ", value)
                     break;
             }
             this[component.name] = fields;
