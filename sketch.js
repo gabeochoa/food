@@ -50,6 +50,13 @@ const CT = {
             type: "OreType",
         }
     },
+    HoldsOre: {
+        name: "HoldsOre",
+        fields: {
+            type: "OreType",
+            amount: "Amount",
+        }
+    }
 };
 
 const EC = {
@@ -57,6 +64,7 @@ const EC = {
     "HasVelocity": [],
     "HasTarget": [],
     "IsOre": [],
+    "HoldsOre": [],
 };
 
 
@@ -102,6 +110,9 @@ class Entity {
                 case "OreType":
                     fields[key] = randomOre();
                     break
+                case "Amount":
+                    fields[key] = 0;
+                    break
                 default:
                     console.warn("Missing handler for ", value)
                     break;
@@ -123,15 +134,25 @@ function make_ship(x,y){
     e = new Entity(x,y, [
         CT.HasVelocity,
         CT.CircleRenderer,
-        CT.HasTarget
+        CT.HasTarget,
+        CT.HoldsOre,
     ])
     entities[e.id] = e;
+}
+
+function remove_entity(id){
+    delete entities[id];
+    for(component of Object.values(EC)){
+        delete component[id]
+    }
 }
 
 function setup() {
   createCanvas(400, 450);
   // 
 
+  make_ore( width/4, height/4)
+  remove_entity(0)
 
   make_ore( width/4, height/4)
   make_ship( width/2, height/2)
@@ -139,6 +160,11 @@ function setup() {
   // 
   print(EC)
   print(entities)
+
+  if(count_entities_with(CT.IsOre) != 1){
+    console.error("remove isnt working")
+  }
+
 }
 
 function distance(a, b){
@@ -168,11 +194,31 @@ function for_components(cmps, cb){
     }
 }
 
-function find_closest_with(cmp, position){
+function to_ents(ids){
+    let ents = [];
+    for(let id of ids){
+        e = entities[id];
+        if(e == null || e == undefined){
+            // console.warn("Entity ", id, " not found")
+            continue;
+        }
+        ents.push(e)
+    }
+    return ents;
+}
+
+function find_closest_with(cmp, position, filter_fn){
     let ids = find_matching_ids([cmp])
     let closest = null;
     for(let id of ids){
         e = entities[id];
+        if(e == null || e == undefined){
+            // console.warn("Entity ", id, " not found")
+            continue;
+        }
+        if(filter_fn && !filter_fn(e)){
+            continue;
+        }
         if(closest == null){
             closest = e.id
             continue;
@@ -185,13 +231,39 @@ function find_closest_with(cmp, position){
     return closest;
 }
 
+function count_entities_with(cmp){
+    let ids = to_ents(find_matching_ids([cmp]))
+    return ids.length;
+}
+
+let tick_num = 0;
 function draw() {
     background(0);
 
-    // find target
-    for_components([CT.HasTarget], (entity, ht) => {
+    {
+        fill(255);
+        text("" + Object.keys(entities).length, 50, 50);
+    }
+
+    // TODO replace with something else? 
+    // spawn ore if under amount 
+    {
+        if(count_entities_with(CT.IsOre) < 1){
+            console.log("spawning a new ore")
+            make_ore(
+                Math.floor(width * Math.random()),
+                Math.floor(height * Math.random()),
+            )
+        }
+    }
+
+    // find cloest ore
+    for_components([CT.HasTarget, CT.HoldsOre], (entity, ht, ho) => {
         if(ht.target_id != null) return
-        let match = find_closest_with(CT.IsOre)
+        let match = find_closest_with(CT.IsOre, entity.pos, (e) => {
+            if(ho.amount == 0) return true;
+            return ho.type == e.IsOre.type;
+        })
         if(match == null) return;
         ht.target_id = match
     });
@@ -208,6 +280,23 @@ function draw() {
         SPEED = 0.5;
         let direction = v_sub(target.pos, entity.pos).normalize().mult(SPEED)
         entity.pos.add(direction)
+    });
+
+    for_components([CT.HasTarget, CT.HoldsOre], (entity, ht, ho) => {
+        if(ht.target_id == null) return
+        target = entities[ht.target_id]
+        if(target == null) {
+            ht.target_id = null;
+            return;
+        }
+        if(distance(entity.pos, target.pos) > 2) return;
+        // TODO reset
+        if(ho.type != null && ho.type != target.IsOre.type) return;
+
+        ho.type = target.IsOre.type;
+        ho.amount += 1;
+        remove_entity(target.id)
+        console.log("Picked up", ho.type)
     });
 
     // process accel
