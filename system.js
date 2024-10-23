@@ -47,11 +47,11 @@ function find_closest_with(cmp, position, filter_fn){
             continue;
         }
         if(closest == null){
-            closest = e.id
+            closest = e
             continue;
         }
         if(distance(position, e.pos) < distance(position, closest.pos)){
-            closest = e.id
+            closest = e
             continue;
         }
     }

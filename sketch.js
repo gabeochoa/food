@@ -12,6 +12,8 @@ function setup() {
   make_ore( width/4, height/4)
   make_ship( width/2, height/2)
 
+  make_ship( width/4, height/2)
+
   // 
   print(EC)
   print(entities)
@@ -19,6 +21,7 @@ function setup() {
   if(count_entities_with(CT.IsOre) != 1){
     console.error("remove isnt working")
   }
+
 
 }
 
@@ -33,7 +36,7 @@ function draw() {
     // TODO replace with something else? 
     // spawn ore if under amount 
     {
-        if(count_entities_with(CT.IsOre) < 1){
+        if(count_entities_with(CT.IsOre) < 5){
             // console.log("spawning a new ore")
             make_ore(
                 Math.floor(width * Math.random()),
@@ -50,7 +53,7 @@ function draw() {
             return ho.type == e.IsOre.type;
         })
         if(match == null) return;
-        ht.target_id = match
+        ht.target_id = match.id
     });
 
     // move to target if one exists
