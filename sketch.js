@@ -81,12 +81,13 @@ class Entity {
 
     add_component_fields(component){
         for (const [key, value] of Object.entries(component.fields)) {
+            let field_name = component.name + "_" + key;
             switch(value){
                 case "Vector":
-                    this[key] = createVector(0,0)
+                    this[field_name] = createVector(0,0)
                     break;
                 case "ID":
-                    this[key] = null
+                    this[field_name] = null
                     break;
                 default:
                     console.log("Missing handler for ", value)
