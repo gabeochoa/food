@@ -48,12 +48,16 @@ function draw() {
     // find cloest ore
     for_components([CT.HasTarget, CT.HoldsOre], (entity, ht, ho) => {
         if(ht.target_id != null) return
-        let match = find_closest_with(CT.IsOre, entity.pos, (e) => {
+        let match = find_closest_with_all([CT.IsOre, CT.IsTarget], entity.pos, (e) => {
             if(ho.amount == 0) return true;
+            if(is_valid_entity(e.IsTarget.parent_id)) {
+                return;
+            }
             return ho.type == e.IsOre.type;
         })
         if(match == null) return;
-        ht.target_id = match.id
+        ht.target_id = match.id;
+        match.IsTarget.parent_id = entity.id;
     });
 
     // move to target if one exists
@@ -94,6 +98,15 @@ function draw() {
 
     // render_circles();
     for_components([CT.CircleRenderer], entity => {
+        push()
+        fill(255, 255, 255, 255);
+        translate(entity.pos.x, entity.pos.y)
+        circle(0, 0, PSIZE)
+        pop()
+    });
+
+    // render_squares()
+    for_components([CT.SquareRenderer], entity => {
         push()
         fill(255, 255, 255, 255);
         translate(entity.pos.x, entity.pos.y)

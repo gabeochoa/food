@@ -1,40 +1,51 @@
 const CT = {
-    CircleRenderer: {
-        name: "CircleRenderer"
+  CircleRenderer: {
+    name: "CircleRenderer",
+  },
+  SquareRenderer: {
+    name: "SquareRenderer",
+  },
+  HasVelocity: {
+    name: "HasVelocity",
+    fields: {
+      vel: "Vector",
     },
-    HasVelocity: {
-        name: "HasVelocity",
-        fields: {
-            vel:  "Vector",
-        }
+  },
+  HasTarget: {
+    name: "HasTarget",
+    fields: {
+      target_id: "ID",
     },
-    HasTarget: {
-        name: "HasTarget",
-        fields: {
-            target_id: "ID",
-        }
+  },
+  IsTarget: {
+    name: "IsTarget",
+    fields: {
+      parent_id: "ID",
     },
-    IsOre: {
-        name: "IsOre",
-        fields: {
-            type: "OreType",
-        }
+  },
+  IsOre: {
+    name: "IsOre",
+    fields: {
+      type: "OreType",
     },
-    HoldsOre: {
-        name: "HoldsOre",
-        fields: {
-            type: "OreType",
-            amount: "Amount",
-        }
-    }
+  },
+  HoldsOre: {
+    name: "HoldsOre",
+    fields: {
+      type: "OreType",
+      amount: "Amount",
+    },
+  },
 };
 
 const EC = {
-    "CircleRenderer": [],
-    "HasVelocity": [],
-    "HasTarget": [],
-    "IsOre": [],
-    "HoldsOre": [],
+  CircleRenderer: [],
+  SquareRenderer: [],
+  HasVelocity: [],
+  HasTarget: [],
+  IsTarget: [],
+  IsOre: [],
+  HoldsOre: [],
 };
 
 function randomOre() {
@@ -92,7 +103,6 @@ class Entity {
 }
 
 function remove_entity(id) {
-  console.log("deleting ", id);
   delete entities[id];
   for (let component of Object.values(EC)) {
     component = component.filter((e) => {
