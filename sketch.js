@@ -1,116 +1,117 @@
-
-const PSIZE = 10
+const PSIZE = 10;
 let entities = {};
 
 function setup() {
   createCanvas(400, 300);
-  // 
+  //
 
-  make_ore( width/4, height/4)
-  remove_entity(0)
+  make_ore(width / 4, height / 4);
+  remove_entity(0);
 
-  make_ore( width/4, height/4)
-  make_ship( width/2, height/2)
+  make_ore(width / 4, height / 4);
+  make_ship(width / 2, height / 2);
 
-  make_ship( width/4, height/2)
+  make_ship(width / 4, height / 2);
 
-  // 
-  print(EC)
-  print(entities)
+  //
+  print(EC);
+  print(entities);
 
-  if(count_entities_with(CT.IsOre) != 1){
-    console.error("remove isnt working")
+  if (count_entities_with(CT.IsOre) != 1) {
+    console.error("remove isnt working");
   }
-
-
 }
 
 function draw() {
-    background(0);
+  background(0);
 
-    {
-        fill(255);
-        text("" + Object.keys(entities).length, 50, 50);
+  {
+    fill(255);
+    text("" + Object.keys(entities).length, 50, 50);
+  }
+
+  // TODO replace with something else?
+  // spawn ore if under amount
+  {
+    if (count_entities_with(CT.IsOre) < 5) {
+      // console.log("spawning a new ore")
+      make_ore(
+        Math.floor(width * Math.random()),
+        Math.floor(height * Math.random())
+      );
+    }
+  }
+
+  // find cloest ore
+  for_components([CT.HasTarget, CT.HoldsOre], (entity, ht, ho) => {
+    if (ht.target_id != null) return;
+    let match = find_closest_with_all(
+      [CT.IsOre, CT.IsTarget],
+      entity.pos,
+      (e) => {
+        if (ho.amount == 0) return true;
+        if (is_valid_entity(e.IsTarget.parent_id)) {
+          return;
+        }
+        return ho.type == e.IsOre.type;
+      }
+    );
+    if (match == null) return;
+    ht.target_id = match.id;
+    match.IsTarget.parent_id = entity.id;
+  });
+
+  // move to target if one exists
+  for_components([CT.HasTarget], (entity, ht) => {
+    if (ht.target_id == null) return;
+    target = entities[ht.target_id];
+    if (target == null) {
+      ht.target_id = null;
+      return;
     }
 
-    // TODO replace with something else? 
-    // spawn ore if under amount 
-    {
-        if(count_entities_with(CT.IsOre) < 5){
-            // console.log("spawning a new ore")
-            make_ore(
-                Math.floor(width * Math.random()),
-                Math.floor(height * Math.random()),
-            )
-        }
+    SPEED = 0.75;
+    let direction = v_sub(target.pos, entity.pos).normalize().mult(SPEED);
+    entity.pos.add(direction);
+  });
+
+  for_components([CT.HasTarget, CT.HoldsOre], (entity, ht, ho) => {
+    if (ht.target_id == null) return;
+    target = entities[ht.target_id];
+    if (target == null) {
+      ht.target_id = null;
+      return;
     }
+    if (distance(entity.pos, target.pos) > 2) return;
+    // TODO reset
+    if (ho.type != null && ho.type != target.IsOre.type) return;
 
-    // find cloest ore
-    for_components([CT.HasTarget, CT.HoldsOre], (entity, ht, ho) => {
-        if(ht.target_id != null) return
-        let match = find_closest_with_all([CT.IsOre, CT.IsTarget], entity.pos, (e) => {
-            if(ho.amount == 0) return true;
-            if(is_valid_entity(e.IsTarget.parent_id)) {
-                return;
-            }
-            return ho.type == e.IsOre.type;
-        })
-        if(match == null) return;
-        ht.target_id = match.id;
-        match.IsTarget.parent_id = entity.id;
-    });
+    ho.type = target.IsOre.type;
+    ho.amount += 1;
+    remove_entity(target.id);
+    // console.log("Picked up", ho.type)
+  });
 
-    // move to target if one exists
-    for_components([CT.HasTarget], (entity, ht) => {
-        if(ht.target_id == null) return
-        target = entities[ht.target_id]
-        if(target == null) {
-            ht.target_id = null;
-            return;
-        }
+  // process accel
+  for_components([CT.HasVelocity], (entity, hv) => {
+    entity.pos.add(hv.vel);
+  });
 
-        SPEED = 0.75;
-        let direction = v_sub(target.pos, entity.pos).normalize().mult(SPEED)
-        entity.pos.add(direction)
-    });
+  // render_circles();
+  for_components([CT.CircleRenderer], (entity) => {
+    push();
+    fill(255, 255, 255, 255);
+    translate(entity.pos.x, entity.pos.y);
+    circle(0, 0, PSIZE);
+    pop();
+  });
 
-    for_components([CT.HasTarget, CT.HoldsOre], (entity, ht, ho) => {
-        if(ht.target_id == null) return
-        target = entities[ht.target_id]
-        if(target == null) {
-            ht.target_id = null;
-            return;
-        }
-        if(distance(entity.pos, target.pos) > 2) return;
-        // TODO reset
-        if(ho.type != null && ho.type != target.IsOre.type) return;
-
-        ho.type = target.IsOre.type;
-        ho.amount += 1;
-        remove_entity(target.id)
-        // console.log("Picked up", ho.type)
-    });
-
-    // process accel
-    for_components([CT.HasVelocity], (entity, hv) => {
-        entity.pos.add(hv.vel)
-    });
-
-    // render_circles();
-    for_components([CT.CircleRenderer], entity => {
-        push()
-        fill(255, 255, 255, 255);
-        translate(entity.pos.x, entity.pos.y)
-        circle(0, 0, PSIZE)
-        pop()
-    });
-
-    // render_squares()
-    for_components([CT.SquareRenderer], entity => {
-        push()
-        fill(255, 255, 255, 255);
-        translate(entity.pos.x, entity.pos.y)
-        rect(0, 0, PSIZE, PSIZE)
-        pop()
-    });
+  // render_squares()
+  for_components([CT.SquareRenderer], (entity) => {
+    push();
+    fill(255, 255, 255, 255);
+    translate(entity.pos.x, entity.pos.y);
+    rect(0, 0, PSIZE, PSIZE);
+    pop();
+  });
 }
