@@ -11,6 +11,10 @@ function find_matching_ids(cmps) {
   return ids;
 }
 
+function has_(id, cmp) {
+  return EC[cmp.name].includes(id);
+}
+
 function for_components(cmps, cb) {
   let ids = find_matching_ids(cmps);
   for (let id of ids) {
@@ -26,9 +30,13 @@ function for_components(cmps, cb) {
   }
 }
 
+function maybe_ent(entity_id) {
+  if (entity_id == null || entity_id == undefined) return null;
+  return entities[entity_id];
+}
+
 function is_valid_entity(entity_id) {
-  if (entity_id == null || entity_id == undefined) return false;
-  e = entities[entity_id];
+  e = maybe_ent(entity_id);
   if (e == null || e == undefined) {
     return false;
   }
