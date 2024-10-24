@@ -45,6 +45,7 @@ function draw() {
 
   // find cloest ore
   for_components([CT.HasTarget, CT.HoldsOre], (entity, ht, ho) => {
+    if (ho.amount >= 1) return;
     if (ht.target_id != null) return;
     let match = find_closest_with_all(
       [CT.IsOre, CT.IsTarget],
