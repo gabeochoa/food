@@ -44,6 +44,7 @@ function draw() {
   }
 
   const SHIP_STORAGE = 1;
+  const SPEED = 2.75;
 
   // find cloest ore
   for_components([CT.HasTarget, CT.HoldsOre], (entity, ht, ho) => {
@@ -92,7 +93,6 @@ function draw() {
       return;
     }
 
-    SPEED = 0.75;
     let direction = v_sub(target.pos, entity.pos).normalize().mult(SPEED);
     entity.pos.add(direction);
   });
@@ -109,20 +109,18 @@ function draw() {
     if (distance(entity.pos, target.pos) > 2) return;
 
     if (has_(target.id, CT.IsOre)) {
-      // TODO reset
       if (ho.type != null && ho.type != target.IsOre.type) return;
 
       ho.type = target.IsOre.type;
       ho.amount += 1;
       remove_entity(target.id);
-      console.log(entity.id, "Picked up", ho.type);
+      //   console.log(entity.id, "Picked up", ho.type);
     }
 
     if (has_(target.id, CT.IsDropoff)) {
-      // TODO reset
       if (ho.type != null && ho.type != target.HoldsOre.type) return;
       target.HoldsOre.amount += ho.amount;
-      console.log("Dropped off ", ho.type, "now has", target.HoldsOre.amount);
+      //   console.log("Dropped off ", ho.type, "now has", target.HoldsOre.amount);
       ho.amount = 0;
       ho.type = null;
     }
