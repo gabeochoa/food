@@ -1,7 +1,12 @@
+/**
+ 
+
+*/
+
 function find_matching_ids(cmps) {
-  let ids = [];
+  let ids = Object.keys(entities).map((id) => parseInt(id));
   for (let cmp of cmps) {
-    ids = ids.concat(EC[cmp.name]).unique();
+    ids = ids.filter((id) => EC[cmp.name].includes(id));
   }
   return ids;
 }
