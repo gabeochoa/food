@@ -56,8 +56,12 @@ const EC = {
   HoldsOre: [],
 };
 
+const OreType = {
+  Iron: "iron",
+};
+
 function randomOre() {
-  const ores = ["iron"];
+  const ores = Object.values(OreType);
   const index = Math.floor(Math.random() * ores.length);
   return ores[index];
 }
