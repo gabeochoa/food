@@ -12,13 +12,14 @@ function setup() {
   make_ship(width / 2, height / 2);
 
   make_ship(width / 4, height / 2);
+  make_drop(width / 6, height / 6, PSIZE * 2, PSIZE * 2, OreType.Iron);
 
   //
   print(EC);
   print(entities);
 
   if (count_entities_with(CT.IsOre) != 1) {
-    console.error("remove isnt working");
+    console.error("remove isnt working", count_entities_with(CT.IsOre));
   }
 }
 
@@ -112,6 +113,15 @@ function draw() {
     fill(255, 255, 255, 255);
     translate(entity.pos.x, entity.pos.y);
     rect(0, 0, PSIZE, PSIZE);
+    pop();
+  });
+
+  // render_rect()
+  for_components([CT.RectRenderer], (entity, rr) => {
+    push();
+    fill(255, 255, 255, 255);
+    translate(entity.pos.x, entity.pos.y);
+    rect(0, 0, rr.w, rr.h);
     pop();
   });
 }

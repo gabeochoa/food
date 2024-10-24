@@ -5,6 +5,13 @@ const CT = {
   SquareRenderer: {
     name: "SquareRenderer",
   },
+  RectRenderer: {
+    name: "RectRenderer",
+    fields: {
+      w: "Number",
+      h: "Number",
+    },
+  },
   HasVelocity: {
     name: "HasVelocity",
     fields: {
@@ -41,6 +48,7 @@ const CT = {
 const EC = {
   CircleRenderer: [],
   SquareRenderer: [],
+  RectRenderer: [],
   HasVelocity: [],
   HasTarget: [],
   IsTarget: [],
@@ -91,6 +99,9 @@ class Entity {
           fields[key] = randomOre();
           break;
         case "Amount":
+          fields[key] = 0;
+          break;
+        case "Number":
           fields[key] = 0;
           break;
         default:
