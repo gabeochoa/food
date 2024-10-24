@@ -43,6 +43,9 @@ const CT = {
       amount: "Amount",
     },
   },
+  IsDropoff: {
+    name: "IsDropoff",
+  },
 };
 
 const EC = {
@@ -54,6 +57,7 @@ const EC = {
   IsTarget: [],
   IsOre: [],
   HoldsOre: [],
+  IsDropoff: [],
 };
 
 const OreType = {

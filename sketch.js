@@ -43,9 +43,11 @@ function draw() {
     }
   }
 
+  const SHIP_STORAGE = 1;
+
   // find cloest ore
   for_components([CT.HasTarget, CT.HoldsOre], (entity, ht, ho) => {
-    if (ho.amount >= 1) return;
+    if (ho.amount >= SHIP_STORAGE) return;
     if (ht.target_id != null) return;
     let match = find_closest_with_all(
       [CT.IsOre, CT.IsTarget],
@@ -59,6 +61,24 @@ function draw() {
       }
     );
     if (match == null) return;
+    ht.target_id = match.id;
+    match.IsTarget.parent_id = entity.id;
+  });
+
+  // find drop off for ore
+  for_components([CT.HasTarget, CT.HoldsOre], (entity, ht, ho) => {
+    if (ho.amount == 0) return;
+    if (ht.target_id != null) return;
+    let match = find_closest_with_all(
+      [CT.HoldsOre, CT.IsDropoff],
+      entity.pos,
+      (e) => {
+        return ho.type == e.HoldsOre.type;
+      }
+    );
+    if (match == null) {
+      return;
+    }
     ht.target_id = match.id;
     match.IsTarget.parent_id = entity.id;
   });
@@ -77,6 +97,8 @@ function draw() {
     entity.pos.add(direction);
   });
 
+  // pick up object
+  // drop off object
   for_components([CT.HasTarget, CT.HoldsOre], (entity, ht, ho) => {
     if (ht.target_id == null) return;
     target = entities[ht.target_id];
@@ -85,13 +107,29 @@ function draw() {
       return;
     }
     if (distance(entity.pos, target.pos) > 2) return;
-    // TODO reset
-    if (ho.type != null && ho.type != target.IsOre.type) return;
 
-    ho.type = target.IsOre.type;
-    ho.amount += 1;
-    remove_entity(target.id);
-    // console.log("Picked up", ho.type)
+    if (has_(target.id, CT.IsOre)) {
+      // TODO reset
+      if (ho.type != null && ho.type != target.IsOre.type) return;
+
+      ho.type = target.IsOre.type;
+      ho.amount += 1;
+      remove_entity(target.id);
+      console.log(entity.id, "Picked up", ho.type);
+    }
+
+    if (has_(target.id, CT.IsDropoff)) {
+      // TODO reset
+      if (ho.type != null && ho.type != target.HoldsOre.type) return;
+      target.HoldsOre.amount += ho.amount;
+      console.log("Dropped off ", ho.type, "now has", target.HoldsOre.amount);
+      ho.amount = 0;
+      ho.type = null;
+    }
+
+    ht.target_id = null;
+
+    return;
   });
 
   // process accel

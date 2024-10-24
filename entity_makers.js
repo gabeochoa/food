@@ -13,9 +13,15 @@ function make_ship(x, y) {
   entities[e.id] = e;
 }
 
-function make_drop(x, y, w, h) {
-  e = new Entity(x, y, [CT.RectRenderer, CT.HoldsOre]);
+function make_drop(x, y, w, h, oreType) {
+  e = new Entity(x, y, [
+    CT.RectRenderer,
+    CT.HoldsOre,
+    CT.IsDropoff,
+    CT.IsTarget,
+  ]);
   e.RectRenderer.w = w;
   e.RectRenderer.h = h;
+  e.HoldsOre.type = oreType;
   entities[e.id] = e;
 }
