@@ -1,6 +1,9 @@
 const PSIZE = 10;
 let entities = {};
 
+let SHIP_STORAGE = 1;
+let SPEED = 2.75;
+
 function setup() {
   createCanvas(400, 300);
   //
@@ -26,9 +29,10 @@ function setup() {
 
   const BUTTON_WIDTH = 50;
   const BUTTON_HEIGHT = 20;
+  const BUTTON_PADDING = 10;
   make_button(
-    width - BUTTON_WIDTH - 10,
-    10,
+    width - BUTTON_WIDTH - BUTTON_PADDING,
+    BUTTON_PADDING,
     BUTTON_WIDTH,
     BUTTON_HEIGHT,
     "spawn 10 ore\n(5 iron)",
@@ -54,17 +58,24 @@ function setup() {
       }
       spawn_10_ore();
     },
-    (_entity) => {
-      console.log("on Hover Start");
+    (_entity) => {},
+    (_entity) => {}
+  );
+  make_button(
+    width - BUTTON_WIDTH - BUTTON_PADDING,
+    BUTTON_HEIGHT + BUTTON_PADDING + BUTTON_PADDING,
+    BUTTON_WIDTH,
+    BUTTON_HEIGHT,
+    "speed up ship\n(15 iron)",
+    () => {
+      if (SPEED > 3.9) return;
+      SPEED += 0.1;
+      console.log("new speed is ", SPEED);
     },
-    (_entity) => {
-      console.log("on Hover End");
-    }
+    (_entity) => {},
+    (_entity) => {}
   );
 }
-
-const SHIP_STORAGE = 1;
-const SPEED = 2.75;
 
 function spawn_10_ore() {
   i = 0;
