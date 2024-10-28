@@ -23,14 +23,10 @@ function setup() {
   }
 }
 
-function draw() {
-  background(0);
+const SHIP_STORAGE = 1;
+const SPEED = 2.75;
 
-  {
-    fill(255);
-    text("" + Object.keys(entities).length, 50, 50);
-  }
-
+function tick() {
   // TODO replace with something else?
   // spawn ore if under amount
   {
@@ -42,9 +38,6 @@ function draw() {
       );
     }
   }
-
-  const SHIP_STORAGE = 1;
-  const SPEED = 2.75;
 
   // find cloest ore
   for_components([CT.HasTarget, CT.HoldsOre], (entity, ht, ho) => {
@@ -134,6 +127,18 @@ function draw() {
   for_components([CT.HasVelocity], (entity, hv) => {
     entity.pos.add(hv.vel);
   });
+}
+
+function draw() {
+  tick();
+
+  background(0);
+
+  {
+    fill(255);
+    textSize(5);
+    text("num ents: " + Object.keys(entities).length, 10, 10);
+  }
 
   // render_circles();
   for_components([CT.CircleRenderer], (entity) => {
@@ -173,7 +178,7 @@ function draw() {
   for (let k of Object.keys(holders)) {
     push();
     fill(255);
-    text("" + k + ": " + holders[k], 50, 100 + ho_offset);
+    text("" + k + ": " + holders[k], 10, 20 + ho_offset);
     pop();
     ho_offset += 25;
   }
