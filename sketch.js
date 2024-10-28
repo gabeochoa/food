@@ -29,6 +29,7 @@ function setup() {
     10,
     BUTTON_WIDTH,
     BUTTON_HEIGHT,
+    "spawn new ore",
     () => {
       if (count_entities_with(CT.IsOre) < 5) {
         // console.log("spawning a new ore")
@@ -217,16 +218,29 @@ function draw() {
     ho_offset += 25;
   }
 
-  for_components(
-    [CT.RectRenderer, CT.HoldsOre, CT.HasHoverInteraction],
-    (entity, rr) => {
-      if (!entity.HoldsOre.show_label) return;
+  for_components([CT.RectRenderer, CT.HasLabel], (entity, rr) => {
+    if (!entity.HasLabel.active) return;
+    push();
+    fill(rr.color);
+    translate(entity.pos.x, entity.pos.y);
+    rect(0, 0, rr.w, rr.h);
+    {
       push();
-      fill(rr.color);
-      translate(entity.pos.x, entity.pos.y);
-      rect(0, 0, rr.w, rr.h);
-      text("" + entity.HoldsOre.type + ": " + entity.HoldsOre.amount, 0, 0);
+      switch (entity.HasLabel.location) {
+        case RectLocation.TopLeft:
+          break;
+        case RectLocation.Center:
+          fill(...inverseColor(...rr.color.levels));
+          const tx = textWidth(entity.HasLabel.text);
+          const ty = textHeight(entity.HasLabel.text);
+          const xs = (rr.w - tx) / 2;
+          const ys = (rr.h - ty) / 2;
+          translate(xs, ys);
+          break;
+      }
+      text("" + entity.HasLabel.text, 0, 0);
       pop();
     }
-  );
+    pop();
+  });
 }

@@ -40,7 +40,6 @@ const CT = {
   HoldsOre: {
     name: "HoldsOre",
     fields: {
-      show_label: "Boolean",
       type: "OreType",
       amount: "Amount",
     },
@@ -63,6 +62,14 @@ const CT = {
       onEnd: "Function",
     },
   },
+  HasLabel: {
+    name: "HasLabel",
+    fields: {
+      active: "Boolean",
+      text: "String",
+      location: "RectLocation",
+    },
+  },
 };
 
 const EC = {
@@ -80,6 +87,7 @@ const EC = {
   //
   HasClickInteraction: [],
   HasHoverInteraction: [],
+  HasLabel: [],
 };
 
 const OreType = {
@@ -104,6 +112,11 @@ class UIInteraction {
     this.callback = callback;
   }
 }
+
+const RectLocation = {
+  TopLeft: "topleft",
+  Center: "center",
+};
 
 let NEXT_ENTITY_ID = 0;
 
@@ -158,6 +171,12 @@ class Entity {
           break;
         case "Color":
           fields[key] = color(255);
+          break;
+        case "String":
+          fields[key] = "";
+          break;
+        case "RectLocation":
+          fields[key] = RectLocation.TopLeft;
           break;
         default:
           console.warn("Missing handler for ", value);
