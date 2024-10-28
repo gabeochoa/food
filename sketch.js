@@ -216,4 +216,17 @@ function draw() {
     pop();
     ho_offset += 25;
   }
+
+  for_components(
+    [CT.RectRenderer, CT.HoldsOre, CT.HasHoverInteraction],
+    (entity, rr) => {
+      if (!entity.HoldsOre.show_label) return;
+      push();
+      fill(rr.color);
+      translate(entity.pos.x, entity.pos.y);
+      rect(0, 0, rr.w, rr.h);
+      text("" + entity.HoldsOre.type + ": " + entity.HoldsOre.amount, 0, 0);
+      pop();
+    }
+  );
 }

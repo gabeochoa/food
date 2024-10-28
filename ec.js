@@ -40,6 +40,7 @@ const CT = {
   HoldsOre: {
     name: "HoldsOre",
     fields: {
+      show_label: "Boolean",
       type: "OreType",
       amount: "Amount",
     },
