@@ -38,10 +38,10 @@ function setup() {
         );
       }
     },
-    () => {
+    (_entity) => {
       console.log("on Hover Start");
     },
-    () => {
+    (_entity) => {
       console.log("on Hover End");
     }
   );
@@ -144,9 +144,13 @@ function tick() {
 function mouseMoved() {
   for_components([CT.HasHoverInteraction], (entity, interaction) => {
     if (mouseInsideRect(entity.pos, entity.RectRenderer)) {
-      interaction.onStart(true);
+      interaction.active = true;
+      interaction.onStart(entity);
     } else {
-      interaction.onEnd(false);
+      if (interaction.active == true) {
+        interaction.onEnd(entity);
+        interaction.active = false;
+      }
     }
   });
 }
@@ -154,7 +158,7 @@ function mouseMoved() {
 function mouseClicked() {
   for_components([CT.HasClickInteraction], (entity, interaction) => {
     if (mouseInsideRect(entity.pos, entity.RectRenderer)) {
-      interaction.callback(true);
+      interaction.callback(entity);
     }
   });
 }
@@ -191,7 +195,7 @@ function draw() {
   // render_rect()
   for_components([CT.RectRenderer], (entity, rr) => {
     push();
-    fill(255, 255, 255, 255);
+    fill(rr.color);
     translate(entity.pos.x, entity.pos.y);
     rect(0, 0, rr.w, rr.h);
     pop();

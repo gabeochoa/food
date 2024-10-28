@@ -19,10 +19,17 @@ function make_drop(x, y, w, h, oreType) {
     CT.HoldsOre,
     CT.IsDropoff,
     CT.IsTarget,
+    CT.HasHoverInteraction,
   ]);
   e.RectRenderer.w = w;
   e.RectRenderer.h = h;
   e.HoldsOre.type = oreType;
+  e.HasHoverInteraction.onStart = (entity) => {
+    entity.RectRenderer.color = color(255, 0, 255, 255);
+  };
+  e.HasHoverInteraction.onEnd = (entity) => {
+    entity.RectRenderer.color = color(255);
+  };
   entities[e.id] = e;
 }
 
@@ -35,8 +42,14 @@ function make_button(x, y, w, h, onClick, onHoverStart, onHoverEnd) {
   e.RectRenderer.w = w;
   e.RectRenderer.h = h;
   e.HasClickInteraction.callback = onClick;
-  e.HasHoverInteraction.onStart = onHoverStart;
-  e.HasHoverInteraction.onEnd = onHoverEnd;
+  e.HasHoverInteraction.onStart = (entity) => {
+    entity.RectRenderer.color = color(255, 0, 255, 255);
+    onHoverStart(entity);
+  };
+  e.HasHoverInteraction.onEnd = (entity) => {
+    entity.RectRenderer.color = color(255);
+    onHoverEnd(entity);
+  };
   entities[e.id] = e;
   console.log(e);
 }

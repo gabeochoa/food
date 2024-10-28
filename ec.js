@@ -10,6 +10,7 @@ const CT = {
     fields: {
       w: "Number",
       h: "Number",
+      color: "Color",
     },
   },
   HasVelocity: {
@@ -55,6 +56,8 @@ const CT = {
   HasHoverInteraction: {
     name: "HasHoverInteraction",
     fields: {
+      active: "Boolean",
+      //
       onStart: "Function",
       onEnd: "Function",
     },
@@ -148,6 +151,12 @@ class Entity {
           break;
         case "Function":
           fields[key] = () => {};
+          break;
+        case "Boolean":
+          fields[key] = false;
+          break;
+        case "Color":
+          fields[key] = color(255);
           break;
         default:
           console.warn("Missing handler for ", value);
