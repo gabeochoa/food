@@ -83,6 +83,34 @@ function find_closest_with(cmp, position, filter_fn) {
   return find_closest_with_all([cmp], position, filter_fn);
 }
 
+function find_all_with(cmps, filter_fn) {
+  let ids = find_matching_ids(cmps);
+  let closest = null;
+  let ents = [];
+  for (let id of ids) {
+    e = entities[id];
+    if (e == null || e == undefined) {
+      // console.warn("Entity ", id, " not found")
+      continue;
+    }
+    if (filter_fn && !filter_fn(e)) {
+      continue;
+    }
+    ents.push(e);
+  }
+  return ents;
+}
+
+function audit_storage() {
+  let holders = {};
+  for_components([CT.HoldsOre, CT.IsTarget], (entity, ho) => {
+    if (ho.type == null) return;
+    if (!(ho.type in holders)) holders[ho.type] = 0;
+    holders[ho.type] += ho.amount;
+  });
+  return holders;
+}
+
 function count_entities_with(cmp) {
   let ids = to_ents(find_matching_ids([cmp]));
   return ids.length;

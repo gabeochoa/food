@@ -22,6 +22,8 @@ function setup() {
     console.error("remove isnt working", count_entities_with(CT.IsOre));
   }
 
+  spawn_10_ore();
+
   const BUTTON_WIDTH = 50;
   const BUTTON_HEIGHT = 20;
   make_button(
@@ -29,15 +31,28 @@ function setup() {
     10,
     BUTTON_WIDTH,
     BUTTON_HEIGHT,
-    "spawn new ore",
+    "spawn 10 ore\n(5 iron)",
     () => {
-      if (count_entities_with(CT.IsOre) < 5) {
-        // console.log("spawning a new ore")
-        make_ore(
-          Math.floor(width * Math.random()),
-          Math.floor(height * Math.random())
-        );
+      const in_storage = audit_storage();
+      if (in_storage[OreType.Iron] && in_storage[OreType.Iron] < 5) {
+        return;
       }
+      const iron_holders = find_all_with(
+        [CT.HoldsOre, CT.IsTarget],
+        (entity) => {
+          return entity.HoldsOre.type == OreType.Iron;
+        }
+      );
+      let i = 5;
+      for (let iron_holder of iron_holders) {
+        i = i - iron_holder.HoldsOre.amount;
+        iron_holder.HoldsOre.amount = 0;
+        if (i <= 0) {
+          iron_holder.HoldsOre.amount += -i;
+          break;
+        }
+      }
+      spawn_10_ore();
     },
     (_entity) => {
       console.log("on Hover Start");
@@ -50,6 +65,18 @@ function setup() {
 
 const SHIP_STORAGE = 1;
 const SPEED = 2.75;
+
+function spawn_10_ore() {
+  i = 0;
+  while (i < 10) {
+    // console.log("spawning a new ore")
+    make_ore(
+      Math.floor(width * Math.random()),
+      Math.floor(height * Math.random())
+    );
+    i++;
+  }
+}
 
 function tick() {
   // find cloest ore
@@ -203,13 +230,8 @@ function draw() {
   });
 
   // calculate + render_holders
-  let holders = {};
+  let holders = audit_storage();
   let ho_offset = 0;
-  for_components([CT.HoldsOre, CT.IsTarget], (entity, ho) => {
-    if (ho.type == null) return;
-    if (!(ho.type in holders)) holders[ho.type] = 0;
-    holders[ho.type] += ho.amount;
-  });
   for (let k of Object.keys(holders)) {
     push();
     fill(255);
