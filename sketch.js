@@ -161,4 +161,20 @@ function draw() {
     rect(0, 0, rr.w, rr.h);
     pop();
   });
+
+  // calculate + render_holders
+  let holders = {};
+  let ho_offset = 0;
+  for_components([CT.HoldsOre, CT.IsTarget], (entity, ho) => {
+    if (ho.type == null) return;
+    if (!(ho.type in holders)) holders[ho.type] = 0;
+    holders[ho.type] += ho.amount;
+  });
+  for (let k of Object.keys(holders)) {
+    push();
+    fill(255);
+    text("" + k + ": " + holders[k], 50, 100 + ho_offset);
+    pop();
+    ho_offset += 25;
+  }
 }
