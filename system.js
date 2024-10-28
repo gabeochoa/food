@@ -87,3 +87,12 @@ function count_entities_with(cmp) {
   let ids = to_ents(find_matching_ids([cmp]));
   return ids.length;
 }
+
+function mouseInsideRect(pos, rectRenderer) {
+  if (mouseX > pos.x && mouseX < pos.x + rectRenderer.w) {
+    if (mouseY > pos.y && mouseY < pos.y + rectRenderer.h) {
+      return true;
+    }
+  }
+  return false;
+}

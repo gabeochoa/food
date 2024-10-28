@@ -46,6 +46,19 @@ const CT = {
   IsDropoff: {
     name: "IsDropoff",
   },
+  HasClickInteraction: {
+    name: "HasClickInteraction",
+    fields: {
+      callback: "Function",
+    },
+  },
+  HasHoverInteraction: {
+    name: "HasHoverInteraction",
+    fields: {
+      onStart: "Function",
+      onEnd: "Function",
+    },
+  },
 };
 
 const EC = {
@@ -58,6 +71,11 @@ const EC = {
   IsOre: [],
   HoldsOre: [],
   IsDropoff: [],
+  //
+  // UI
+  //
+  HasClickInteraction: [],
+  HasHoverInteraction: [],
 };
 
 const OreType = {
@@ -68,6 +86,19 @@ function randomOre() {
   const ores = Object.values(OreType);
   const index = Math.floor(Math.random() * ores.length);
   return ores[index];
+}
+
+const UI_Interaction_Type = {
+  None: "none",
+  Click: "click",
+  Hover: "hover",
+};
+
+class UIInteraction {
+  constructor(type, callback) {
+    this.type = type;
+    this.callback = callback;
+  }
 }
 
 let NEXT_ENTITY_ID = 0;
@@ -111,6 +142,12 @@ class Entity {
           break;
         case "Number":
           fields[key] = 0;
+          break;
+        case "Interaction[]":
+          fields[key] = [];
+          break;
+        case "Function":
+          fields[key] = () => {};
           break;
         default:
           console.warn("Missing handler for ", value);

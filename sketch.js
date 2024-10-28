@@ -21,24 +21,36 @@ function setup() {
   if (count_entities_with(CT.IsOre) != 1) {
     console.error("remove isnt working", count_entities_with(CT.IsOre));
   }
+
+  const BUTTON_WIDTH = 50;
+  const BUTTON_HEIGHT = 20;
+  make_button(
+    width - BUTTON_WIDTH - 10,
+    10,
+    BUTTON_WIDTH,
+    BUTTON_HEIGHT,
+    () => {
+      if (count_entities_with(CT.IsOre) < 5) {
+        // console.log("spawning a new ore")
+        make_ore(
+          Math.floor(width * Math.random()),
+          Math.floor(height * Math.random())
+        );
+      }
+    },
+    () => {
+      console.log("on Hover Start");
+    },
+    () => {
+      console.log("on Hover End");
+    }
+  );
 }
 
 const SHIP_STORAGE = 1;
 const SPEED = 2.75;
 
 function tick() {
-  // TODO replace with something else?
-  // spawn ore if under amount
-  {
-    if (count_entities_with(CT.IsOre) < 5) {
-      // console.log("spawning a new ore")
-      make_ore(
-        Math.floor(width * Math.random()),
-        Math.floor(height * Math.random())
-      );
-    }
-  }
-
   // find cloest ore
   for_components([CT.HasTarget, CT.HoldsOre], (entity, ht, ho) => {
     if (ho.amount >= SHIP_STORAGE) return;
@@ -126,6 +138,24 @@ function tick() {
   // process accel
   for_components([CT.HasVelocity], (entity, hv) => {
     entity.pos.add(hv.vel);
+  });
+}
+
+function mouseMoved() {
+  for_components([CT.HasHoverInteraction], (entity, interaction) => {
+    if (mouseInsideRect(entity.pos, entity.RectRenderer)) {
+      interaction.onStart(true);
+    } else {
+      interaction.onEnd(false);
+    }
+  });
+}
+
+function mouseClicked() {
+  for_components([CT.HasClickInteraction], (entity, interaction) => {
+    if (mouseInsideRect(entity.pos, entity.RectRenderer)) {
+      interaction.callback(true);
+    }
   });
 }
 
