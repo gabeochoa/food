@@ -59,6 +59,22 @@ function make_button(x, y, w, h, label, onClick, onHoverStart, onHoverEnd) {
     onHoverEnd(entity);
   };
   entities[e.id] = e;
+  return e;
+}
+
+function make_dynamic_button(
+  x,
+  y,
+  w,
+  h,
+  label,
+  onClick,
+  onHoverStart,
+  onHoverEnd
+) {
+  let e = make_button(x, y, w, h, "", onClick, onHoverStart, onHoverEnd);
+  e.HasLabel.is_dynamic = true;
+  e.HasLabel.get_text = label;
 }
 
 function make_label(x, y, callback) {

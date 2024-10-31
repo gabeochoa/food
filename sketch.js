@@ -6,6 +6,10 @@ let SPEED = 0.75;
 
 let ticks = 0;
 
+let spawn_radius = 0;
+let NUM_SPAWNED = 10;
+let SPAWN_ORE_COST = 5;
+
 let map_info = {
   zoomLevel: 1,
   center: [0, 0],
@@ -15,6 +19,8 @@ function setup() {
   frameRate(60);
   let cnv = createCanvas(400, 300);
   cnv.mouseWheel(mouseScrolled);
+
+  spawn_radius = width / 2;
   //
 
   make_ore(width / 4, height / 4);
@@ -34,17 +40,19 @@ function setup() {
     console.error("remove isnt working", count_entities_with(CT.IsOre));
   }
 
-  spawn_10_ore();
+  spawn_N_ore();
 
   const BUTTON_WIDTH = 50;
   const BUTTON_HEIGHT = 20;
   const BUTTON_PADDING = 10;
-  make_button(
+  make_dynamic_button(
     width - BUTTON_WIDTH - BUTTON_PADDING,
     BUTTON_PADDING,
     BUTTON_WIDTH,
     BUTTON_HEIGHT,
-    "spawn 10 ore\n(5 iron)",
+    () => {
+      return "spawn " + NUM_SPAWNED + " ore\n(" + SPAWN_ORE_COST + " iron)";
+    },
     () => {
       const in_storage = audit_storage();
       if (in_storage[OreType.Iron] && in_storage[OreType.Iron] < 5) {
@@ -65,7 +73,7 @@ function setup() {
           break;
         }
       }
-      spawn_10_ore();
+      spawn_N_ore();
     },
     (_entity) => {},
     (_entity) => {}
@@ -100,16 +108,21 @@ function setup() {
   });
 }
 
-function spawn_10_ore() {
+function spawn_N_ore() {
   i = 0;
-  while (i < 10) {
+  while (i < NUM_SPAWNED) {
     // console.log("spawning a new ore")
+
+    let rad = (spawn_radius / 2) * Math.random();
+    let angle = 2 * PI * Math.random();
     make_ore(
-      Math.floor(width * Math.random()),
-      Math.floor(height * Math.random())
+      width / 2 + Math.floor(cos(angle) * rad),
+      height / 2 + Math.floor(sin(angle) * rad)
     );
     i++;
   }
+  spawn_radius += 75;
+  NUM_SPAWNED *= 1.1;
 }
 
 function on_second_tick() {}
@@ -265,6 +278,16 @@ function draw() {
     render_squares();
     render_rect();
     render_labels();
+
+    //
+    push();
+    {
+      stroke(255);
+      strokeWeight(2 / map_info.zoomLevel);
+      noFill();
+      circle(width / 2, height / 2, spawn_radius);
+    }
+    pop();
   }
   pop();
 }
