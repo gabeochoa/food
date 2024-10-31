@@ -122,7 +122,7 @@ function spawn_N_ore() {
     i++;
   }
   spawn_radius += 75;
-  NUM_SPAWNED *= 1.1;
+  NUM_SPAWNED = Math.round(NUM_SPAWNED * 1.2);
 }
 
 function on_second_tick() {}
