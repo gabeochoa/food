@@ -124,3 +124,79 @@ function mouseInsideRect(pos, rectRenderer) {
   }
   return false;
 }
+
+// Renderer system
+
+function render_circles() {
+  for_components([CT.CircleRenderer], (entity) => {
+    push();
+    fill(255, 255, 255, 255);
+    translate(entity.pos.x, entity.pos.y);
+    circle(0, 0, PSIZE);
+    pop();
+  });
+}
+
+function render_squares() {
+  for_components([CT.SquareRenderer], (entity) => {
+    push();
+    fill(255, 255, 255, 255);
+    translate(entity.pos.x, entity.pos.y);
+    rect(0, 0, PSIZE, PSIZE);
+    pop();
+  });
+}
+
+function render_rect() {
+  for_components([CT.RectRenderer], (entity, rr) => {
+    push();
+    fill(rr.color);
+    translate(entity.pos.x, entity.pos.y);
+    rect(0, 0, rr.w, rr.h);
+    pop();
+  });
+}
+
+function render_labels() {
+  for_components([CT.HasLabel], (entity) => {
+    if (!entity.HasLabel.active) return;
+    push();
+
+    fill(255);
+    textSize(5);
+
+    const has_rect_background = has_(entity.id, CT.RectRenderer);
+    if (has_rect_background) {
+      background_color = entity.RectRenderer.color.levels;
+    } else {
+      background_color = [0, 0, 0];
+    }
+
+    if (entity.HasLabel.is_dynamic) {
+      console.log("dynamic:)");
+      entity.HasLabel.text = entity.HasLabel.get_text();
+    }
+
+    translate(entity.pos.x, entity.pos.y);
+
+    switch (entity.HasLabel.location) {
+      case RectLocation.TopLeft:
+        break;
+      case RectLocation.Center:
+        fill(...inverseColor(...background_color));
+        if (has_rect_background) {
+          const rr = entity.RectRenderer;
+          const tx = textWidth(entity.HasLabel.text);
+          const ty = textHeight(entity.HasLabel.text);
+          const xs = (rr.w - tx) / 2;
+          const ys = (rr.h - ty) / 2;
+          translate(xs, ys);
+        }
+        break;
+    }
+    text("" + entity.HasLabel.text, 0, 0);
+    pop();
+  });
+}
+
+// end renderer system
