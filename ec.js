@@ -74,8 +74,8 @@ const CT = {
       get_text: "Function",
     },
   },
-  HasLockedScale: {
-    name: "HasLockedScale",
+  HasAbsolutePosition: {
+    name: "HasAbsolutePosition",
     fields: {},
   },
 };
@@ -96,7 +96,7 @@ const EC = {
   HasClickInteraction: [],
   HasHoverInteraction: [],
   HasLabel: [],
-  HasLockedScale: [],
+  HasAbsolutePosition: [],
 };
 
 const OreType = {

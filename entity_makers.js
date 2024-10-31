@@ -42,7 +42,7 @@ function make_button(x, y, w, h, label, onClick, onHoverStart, onHoverEnd) {
     CT.HasClickInteraction,
     CT.HasHoverInteraction,
     CT.HasLabel,
-    CT.HasLockedScale,
+    CT.HasAbsolutePosition,
   ]);
   e.RectRenderer.w = w;
   e.RectRenderer.h = h;
@@ -62,7 +62,7 @@ function make_button(x, y, w, h, label, onClick, onHoverStart, onHoverEnd) {
 }
 
 function make_label(x, y, callback) {
-  e = new Entity(x, y, [CT.HasLabel, CT.HasLockedScale]);
+  e = new Entity(x, y, [CT.HasLabel, CT.HasAbsolutePosition]);
   e.HasLabel.is_dynamic = true;
   e.HasLabel.active = true;
   e.HasLabel.location = RectLocation.Center;
@@ -73,7 +73,7 @@ function make_label(x, y, callback) {
 }
 
 function make_label_list(x, y, callback) {
-  e = new Entity(x, y, [CT.HasLabel, CT.HasLockedScale]);
+  e = new Entity(x, y, [CT.HasLabel, CT.HasAbsolutePosition]);
   e.HasLabel.is_dynamic = true;
   e.HasLabel.active = true;
   e.HasLabel.location = RectLocation.Center;

@@ -130,7 +130,7 @@ function mouseInsideRect(pos, rectRenderer) {
 function render_circles() {
   for_components([CT.CircleRenderer], (entity) => {
     push();
-    if (has_(entity.id, CT.HasLockedScale)) {
+    if (has_(entity.id, CT.HasAbsolutePosition)) {
       scale(1 / map_info.zoomLevel);
     }
     fill(255, 255, 255, 255);
@@ -143,7 +143,7 @@ function render_circles() {
 function render_squares() {
   for_components([CT.SquareRenderer], (entity) => {
     push();
-    if (has_(entity.id, CT.HasLockedScale)) {
+    if (has_(entity.id, CT.HasAbsolutePosition)) {
       scale(1 / map_info.zoomLevel);
     }
     fill(255, 255, 255, 255);
@@ -156,8 +156,9 @@ function render_squares() {
 function render_rect() {
   for_components([CT.RectRenderer], (entity, rr) => {
     push();
-    if (has_(entity.id, CT.HasLockedScale)) {
+    if (has_(entity.id, CT.HasAbsolutePosition)) {
       scale(1 / map_info.zoomLevel);
+      translate(-map_info.center[0], -map_info.center[1]);
     }
     fill(rr.color);
     translate(entity.pos.x, entity.pos.y);
@@ -174,8 +175,9 @@ function render_labels() {
     fill(255);
     textSize(5);
 
-    if (has_(entity.id, CT.HasLockedScale)) {
+    if (has_(entity.id, CT.HasAbsolutePosition)) {
       scale(1 / map_info.zoomLevel);
+      translate(-map_info.center[0], -map_info.center[1]);
     }
 
     const has_rect_background = has_(entity.id, CT.RectRenderer);

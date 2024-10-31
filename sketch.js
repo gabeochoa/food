@@ -213,9 +213,9 @@ function tick() {
 
 function mouseScrolled(event) {
   if (event.deltaY > 0) {
-    map_info.zoomLevel += 0.01;
-  } else if (event.deltaY < 0) {
     map_info.zoomLevel -= 0.01;
+  } else if (event.deltaY < 0) {
+    map_info.zoomLevel += 0.01;
   }
 }
 
@@ -233,7 +233,17 @@ function mouseMoved() {
   });
 }
 
-function mouseClicked() {
+function mouseDragged(event) {
+  // Code to run that uses the event.
+  if (mouseButton == "center") {
+    map_info.center = [
+      map_info.center[0] + movedX / 2,
+      map_info.center[1] + movedY / 2,
+    ];
+  }
+}
+
+function mouseClicked(event) {
   for_components([CT.HasClickInteraction], (entity, interaction) => {
     if (mouseInsideRect(entity.pos, entity.RectRenderer)) {
       interaction.callback(entity);
@@ -248,6 +258,7 @@ function draw() {
 
   push();
   {
+    translate(map_info.center[0], map_info.center[1]);
     scale(map_info.zoomLevel);
     background(0);
     render_circles();
