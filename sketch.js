@@ -2,9 +2,12 @@ const PSIZE = 10;
 let entities = {};
 
 let SHIP_STORAGE = 1;
-let SPEED = 2.75;
+let SPEED = 0.75;
+
+let ticks = 0;
 
 function setup() {
+  frameRate(60);
   createCanvas(400, 300);
   //
 
@@ -75,6 +78,21 @@ function setup() {
     (_entity) => {},
     (_entity) => {}
   );
+
+  make_label(10, 10, () => {
+    return "num ents " + Object.keys(entities).length;
+  });
+
+  make_label_list(10, 20, () => {
+    // calculate + render_holders
+    let holders = audit_storage();
+    let ho_offset = 0;
+    let texts = [];
+    for (let k of Object.keys(holders)) {
+      texts.push("" + k + ": " + holders[k]);
+    }
+    return texts.join("\n");
+  });
 }
 
 function spawn_10_ore() {
@@ -89,7 +107,15 @@ function spawn_10_ore() {
   }
 }
 
+function on_second_tick() {}
+
 function tick() {
+  ticks += 1;
+  if (ticks >= 60) {
+    ticks -= 60;
+    on_second_tick();
+  }
+
   // find cloest ore
   for_components([CT.HasTarget, CT.HoldsOre], (entity, ht, ho) => {
     if (ho.amount >= SHIP_STORAGE) return;
@@ -207,12 +233,6 @@ function draw() {
 
   background(0);
 
-  {
-    fill(255);
-    textSize(5);
-    text("num ents: " + Object.keys(entities).length, 10, 10);
-  }
-
   // render_circles();
   for_components([CT.CircleRenderer], (entity) => {
     push();
@@ -240,40 +260,51 @@ function draw() {
     pop();
   });
 
-  // calculate + render_holders
-  let holders = audit_storage();
-  let ho_offset = 0;
-  for (let k of Object.keys(holders)) {
-    push();
-    fill(255);
-    text("" + k + ": " + holders[k], 10, 20 + ho_offset);
-    pop();
-    ho_offset += 25;
-  }
-
-  for_components([CT.RectRenderer, CT.HasLabel], (entity, rr) => {
-    if (!entity.HasLabel.active) return;
+  for_components([CT.RectRenderer], (entity, rr) => {
     push();
     fill(rr.color);
     translate(entity.pos.x, entity.pos.y);
     rect(0, 0, rr.w, rr.h);
-    {
-      push();
-      switch (entity.HasLabel.location) {
-        case RectLocation.TopLeft:
-          break;
-        case RectLocation.Center:
-          fill(...inverseColor(...rr.color.levels));
+    pop();
+  });
+
+  for_components([CT.HasLabel], (entity) => {
+    if (!entity.HasLabel.active) return;
+    push();
+
+    fill(255);
+    textSize(5);
+
+    const has_rect_background = has_(entity.id, CT.RectRenderer);
+    if (has_rect_background) {
+      background_color = entity.RectRenderer.color.levels;
+    } else {
+      background_color = [0, 0, 0];
+    }
+
+    if (entity.HasLabel.is_dynamic) {
+      console.log("dynamic:)");
+      entity.HasLabel.text = entity.HasLabel.get_text();
+    }
+
+    translate(entity.pos.x, entity.pos.y);
+
+    switch (entity.HasLabel.location) {
+      case RectLocation.TopLeft:
+        break;
+      case RectLocation.Center:
+        fill(...inverseColor(...background_color));
+        if (has_rect_background) {
+          const rr = entity.RectRenderer;
           const tx = textWidth(entity.HasLabel.text);
           const ty = textHeight(entity.HasLabel.text);
           const xs = (rr.w - tx) / 2;
           const ys = (rr.h - ty) / 2;
           translate(xs, ys);
-          break;
-      }
-      text("" + entity.HasLabel.text, 0, 0);
-      pop();
+        }
+        break;
     }
+    text("" + entity.HasLabel.text, 0, 0);
     pop();
   });
 }

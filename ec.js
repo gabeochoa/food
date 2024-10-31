@@ -66,8 +66,12 @@ const CT = {
     name: "HasLabel",
     fields: {
       active: "Boolean",
+      // when true, get_text() is called and text is last rendered
+      is_dynamic: "Boolean",
       text: "String",
       location: "RectLocation",
+      // called when is_dynamic=true
+      get_text: "Function",
     },
   },
 };

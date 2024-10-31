@@ -59,3 +59,25 @@ function make_button(x, y, w, h, label, onClick, onHoverStart, onHoverEnd) {
   };
   entities[e.id] = e;
 }
+
+function make_label(x, y, callback) {
+  e = new Entity(x, y, [CT.HasLabel]);
+  e.HasLabel.is_dynamic = true;
+  e.HasLabel.active = true;
+  e.HasLabel.location = RectLocation.Center;
+  e.HasLabel.get_text = callback;
+  e.HasLabel.text = "PLACEHOLDER TEXT";
+
+  entities[e.id] = e;
+}
+
+function make_label_list(x, y, callback) {
+  e = new Entity(x, y, [CT.HasLabel]);
+  e.HasLabel.is_dynamic = true;
+  e.HasLabel.active = true;
+  e.HasLabel.location = RectLocation.Center;
+  e.HasLabel.get_text = callback;
+  e.HasLabel.text = "PLACEHOLDER TEXT";
+
+  entities[e.id] = e;
+}
