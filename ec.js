@@ -74,6 +74,10 @@ const CT = {
       get_text: "Function",
     },
   },
+  HasLockedScale: {
+    name: "HasLockedScale",
+    fields: {},
+  },
 };
 
 const EC = {
@@ -92,6 +96,7 @@ const EC = {
   HasClickInteraction: [],
   HasHoverInteraction: [],
   HasLabel: [],
+  HasLockedScale: [],
 };
 
 const OreType = {

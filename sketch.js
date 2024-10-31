@@ -5,10 +5,12 @@ let SHIP_STORAGE = 1;
 let SPEED = 0.75;
 
 let ticks = 0;
+let zoomLevel = 1;
 
 function setup() {
   frameRate(60);
-  createCanvas(400, 300);
+  let cnv = createCanvas(400, 300);
+  cnv.mouseWheel(mouseScrolled);
   //
 
   make_ore(width / 4, height / 4);
@@ -86,7 +88,6 @@ function setup() {
   make_label_list(10, 20, () => {
     // calculate + render_holders
     let holders = audit_storage();
-    let ho_offset = 0;
     let texts = [];
     for (let k of Object.keys(holders)) {
       texts.push("" + k + ": " + holders[k]);
@@ -206,6 +207,14 @@ function tick() {
   });
 }
 
+function mouseScrolled(event) {
+  if (event.deltaY > 0) {
+    zoomLevel += 0.01;
+  } else if (event.deltaY < 0) {
+    zoomLevel -= 0.01;
+  }
+}
+
 function mouseMoved() {
   for_components([CT.HasHoverInteraction], (entity, interaction) => {
     if (mouseInsideRect(entity.pos, entity.RectRenderer)) {
@@ -233,9 +242,14 @@ function draw() {
 
   //
 
-  background(0);
-  render_circles();
-  render_squares();
-  render_rect();
-  render_labels();
+  push();
+  {
+    scale(zoomLevel);
+    background(0);
+    render_circles();
+    render_squares();
+    render_rect();
+    render_labels();
+  }
+  pop();
 }

@@ -150,6 +150,9 @@ function render_squares() {
 function render_rect() {
   for_components([CT.RectRenderer], (entity, rr) => {
     push();
+    if (has_(entity.id, CT.HasLockedScale)) {
+      scale(1 / zoomLevel);
+    }
     fill(rr.color);
     translate(entity.pos.x, entity.pos.y);
     rect(0, 0, rr.w, rr.h);
@@ -165,6 +168,10 @@ function render_labels() {
     fill(255);
     textSize(5);
 
+    if (has_(entity.id, CT.HasLockedScale)) {
+      scale(1 / zoomLevel);
+    }
+
     const has_rect_background = has_(entity.id, CT.RectRenderer);
     if (has_rect_background) {
       background_color = entity.RectRenderer.color.levels;
@@ -173,7 +180,6 @@ function render_labels() {
     }
 
     if (entity.HasLabel.is_dynamic) {
-      console.log("dynamic:)");
       entity.HasLabel.text = entity.HasLabel.get_text();
     }
 
