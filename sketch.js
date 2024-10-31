@@ -235,7 +235,7 @@ function mouseMoved() {
 
 function mouseDragged(event) {
   // Code to run that uses the event.
-  if (mouseButton == "center") {
+  if (mouseButton == "center" || mouseButton == "right") {
     map_info.center = [
       map_info.center[0] + movedX / 2,
       map_info.center[1] + movedY / 2,

@@ -201,7 +201,7 @@ function render_labels() {
         if (has_rect_background) {
           const rr = entity.RectRenderer;
           const tx = textWidth(entity.HasLabel.text);
-          const ty = textHeight(entity.HasLabel.text);
+          const ty = textHeight(entity.HasLabel.text ?? "");
           const xs = (rr.w - tx) / 2;
           const ys = (rr.h - ty) / 2;
           translate(xs, ys);

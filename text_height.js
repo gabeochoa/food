@@ -8,6 +8,7 @@ function textHeight(
   customheight,
   maxheight
 ) {
+  if (text == null) return 10;
   var above;
   var below;
   if (textsize != undefined) {
