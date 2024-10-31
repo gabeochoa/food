@@ -130,6 +130,9 @@ function mouseInsideRect(pos, rectRenderer) {
 function render_circles() {
   for_components([CT.CircleRenderer], (entity) => {
     push();
+    if (has_(entity.id, CT.HasLockedScale)) {
+      scale(1 / map_info.zoomLevel);
+    }
     fill(255, 255, 255, 255);
     translate(entity.pos.x, entity.pos.y);
     circle(0, 0, PSIZE);
@@ -140,6 +143,9 @@ function render_circles() {
 function render_squares() {
   for_components([CT.SquareRenderer], (entity) => {
     push();
+    if (has_(entity.id, CT.HasLockedScale)) {
+      scale(1 / map_info.zoomLevel);
+    }
     fill(255, 255, 255, 255);
     translate(entity.pos.x, entity.pos.y);
     rect(0, 0, PSIZE, PSIZE);
@@ -151,7 +157,7 @@ function render_rect() {
   for_components([CT.RectRenderer], (entity, rr) => {
     push();
     if (has_(entity.id, CT.HasLockedScale)) {
-      scale(1 / zoomLevel);
+      scale(1 / map_info.zoomLevel);
     }
     fill(rr.color);
     translate(entity.pos.x, entity.pos.y);
@@ -169,7 +175,7 @@ function render_labels() {
     textSize(5);
 
     if (has_(entity.id, CT.HasLockedScale)) {
-      scale(1 / zoomLevel);
+      scale(1 / map_info.zoomLevel);
     }
 
     const has_rect_background = has_(entity.id, CT.RectRenderer);

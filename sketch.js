@@ -5,7 +5,11 @@ let SHIP_STORAGE = 1;
 let SPEED = 0.75;
 
 let ticks = 0;
-let zoomLevel = 1;
+
+let map_info = {
+  zoomLevel: 1,
+  center: [0, 0],
+};
 
 function setup() {
   frameRate(60);
@@ -209,9 +213,9 @@ function tick() {
 
 function mouseScrolled(event) {
   if (event.deltaY > 0) {
-    zoomLevel += 0.01;
+    map_info.zoomLevel += 0.01;
   } else if (event.deltaY < 0) {
-    zoomLevel -= 0.01;
+    map_info.zoomLevel -= 0.01;
   }
 }
 
@@ -244,7 +248,7 @@ function draw() {
 
   push();
   {
-    scale(zoomLevel);
+    scale(map_info.zoomLevel);
     background(0);
     render_circles();
     render_squares();
