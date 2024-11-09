@@ -60,7 +60,7 @@ function setup() {
           return entity.HoldsOre.type == OreType.Iron;
         }
       );
-      let i = 5;
+      let i = SPAWN_ORE_COST;
       for (let iron_holder of iron_holders) {
         i = i - iron_holder.HoldsOre.amount;
         iron_holder.HoldsOre.amount = 0;
@@ -74,7 +74,7 @@ function setup() {
     onHoverStart: (_entity) => {},
     onHoverEnd: (_entity) => {},
     validationFunction: (_entity) => {
-      return amount_in_storage(OreType.Iron) >= 5;
+      return amount_in_storage(OreType.Iron) >= SPAWN_ORE_COST;
     },
   });
   make_button({
@@ -90,7 +90,9 @@ function setup() {
     },
     onHoverStart: (_entity) => {},
     onHoverEnd: (_entity) => {},
-    validationFunction: null,
+    validationFunction: () => {
+      return amount_in_storage(OreType.Iron) >= 15;
+    },
   });
 
   make_label(10, 10, () => {
