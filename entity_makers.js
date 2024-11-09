@@ -36,7 +36,16 @@ function make_drop(x, y, w, h, oreType) {
   entities[e.id] = e;
 }
 
-function make_button(x, y, w, h, label, onClick, onHoverStart, onHoverEnd) {
+function make_button({
+  x,
+  y,
+  w,
+  h,
+  label,
+  onClick,
+  onHoverStart,
+  onHoverEnd,
+} = {}) {
   e = new Entity(x, y, [
     CT.RectRenderer,
     CT.HasClickInteraction,
@@ -62,19 +71,13 @@ function make_button(x, y, w, h, label, onClick, onHoverStart, onHoverEnd) {
   return e;
 }
 
-function make_dynamic_button(
-  x,
-  y,
-  w,
-  h,
-  label,
-  onClick,
-  onHoverStart,
-  onHoverEnd
-) {
-  let e = make_button(x, y, w, h, "", onClick, onHoverStart, onHoverEnd);
+function make_dynamic_button(buttonOptions) {
+  let e = make_button({
+    ...buttonOptions,
+    label: "",
+  });
   e.HasLabel.is_dynamic = true;
-  e.HasLabel.get_text = label;
+  e.HasLabel.get_text = buttonOptions.label;
 }
 
 function make_label(x, y, callback) {

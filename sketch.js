@@ -45,15 +45,15 @@ function setup() {
   const BUTTON_WIDTH = 50;
   const BUTTON_HEIGHT = 20;
   const BUTTON_PADDING = 10;
-  make_dynamic_button(
-    width - BUTTON_WIDTH - BUTTON_PADDING,
-    BUTTON_PADDING,
-    BUTTON_WIDTH,
-    BUTTON_HEIGHT,
-    () => {
+  make_dynamic_button({
+    x: width - BUTTON_WIDTH - BUTTON_PADDING,
+    y: BUTTON_PADDING,
+    w: BUTTON_WIDTH,
+    h: BUTTON_HEIGHT,
+    label: () => {
       return "spawn " + NUM_SPAWNED + " ore\n(" + SPAWN_ORE_COST + " iron)";
     },
-    () => {
+    onClick: () => {
       const in_storage = audit_storage();
       if (in_storage[OreType.Iron] && in_storage[OreType.Iron] < 5) {
         return;
@@ -75,23 +75,23 @@ function setup() {
       }
       spawn_N_ore();
     },
-    (_entity) => {},
-    (_entity) => {}
-  );
-  make_button(
-    width - BUTTON_WIDTH - BUTTON_PADDING,
-    BUTTON_HEIGHT + BUTTON_PADDING + BUTTON_PADDING,
-    BUTTON_WIDTH,
-    BUTTON_HEIGHT,
-    "speed up ship\n(15 iron)",
-    () => {
+    onHoverStart: (_entity) => {},
+    onHoverEnd: (_entity) => {},
+  });
+  make_button({
+    x: width - BUTTON_WIDTH - BUTTON_PADDING,
+    y: BUTTON_HEIGHT + BUTTON_PADDING + BUTTON_PADDING,
+    w: BUTTON_WIDTH,
+    h: BUTTON_HEIGHT,
+    label: "speed up ship\n(15 iron)",
+    onClick: () => {
       if (SPEED > 3.9) return;
       SPEED += 0.1;
       console.log("new speed is ", SPEED);
     },
-    (_entity) => {},
-    (_entity) => {}
-  );
+    onHoverStart: (_entity) => {},
+    onHoverEnd: (_entity) => {},
+  });
 
   make_label(10, 10, () => {
     return "num ents " + Object.keys(entities).length;
