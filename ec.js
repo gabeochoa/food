@@ -51,6 +51,7 @@ const CT = {
     name: "HasClickInteraction",
     fields: {
       callback: "Function",
+      validator: "NullableFunction",
     },
   },
   HasHoverInteraction: {
@@ -174,6 +175,9 @@ class Entity {
           break;
         case "Function":
           fields[key] = () => {};
+          break;
+        case "NullableFunction":
+          fields[key] = null;
           break;
         case "Boolean":
           fields[key] = false;

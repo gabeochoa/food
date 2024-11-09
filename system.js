@@ -125,6 +125,12 @@ function mouseInsideRect(pos, rectRenderer) {
   return false;
 }
 
+function amount_in_storage(ore_type) {
+  const in_storage = audit_storage();
+  if (ore_type in in_storage) return in_storage[ore_type];
+  return 0;
+}
+
 // Renderer system
 
 function render_circles() {
@@ -153,6 +159,25 @@ function render_squares() {
   });
 }
 
+function get_rect_color(entity) {
+  if (
+    has_(entity.id, CT.HasClickInteraction) &&
+    entity.HasClickInteraction.validator
+  ) {
+    if (!entity.HasClickInteraction.validator(entity)) {
+      return color(100, 100, 100, 255);
+    }
+  }
+
+  // TODO move hover color into here
+
+  if (has_(entity.id, CT.RectRenderer)) {
+    return entity.RectRenderer.color;
+  }
+
+  return color(0, 0, 0, 255);
+}
+
 function render_rect() {
   for_components([CT.RectRenderer], (entity, rr) => {
     push();
@@ -160,7 +185,7 @@ function render_rect() {
       scale(1 / map_info.zoomLevel);
       translate(-map_info.center[0], -map_info.center[1]);
     }
-    fill(rr.color);
+    fill(get_rect_color(entity));
     translate(entity.pos.x, entity.pos.y);
     rect(0, 0, rr.w, rr.h);
     pop();
@@ -181,11 +206,7 @@ function render_labels() {
     }
 
     const has_rect_background = has_(entity.id, CT.RectRenderer);
-    if (has_rect_background) {
-      background_color = entity.RectRenderer.color.levels;
-    } else {
-      background_color = [0, 0, 0];
-    }
+    background_color = get_rect_color(entity);
 
     if (entity.HasLabel.is_dynamic) {
       entity.HasLabel.text = entity.HasLabel.get_text();
@@ -197,7 +218,7 @@ function render_labels() {
       case RectLocation.TopLeft:
         break;
       case RectLocation.Center:
-        fill(...inverseColor(...background_color));
+        fill(...inverseColor(...background_color.levels));
         if (has_rect_background) {
           const rr = entity.RectRenderer;
           const tx = textWidth(entity.HasLabel.text);

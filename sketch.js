@@ -54,10 +54,6 @@ function setup() {
       return "spawn " + NUM_SPAWNED + " ore\n(" + SPAWN_ORE_COST + " iron)";
     },
     onClick: () => {
-      const in_storage = audit_storage();
-      if (in_storage[OreType.Iron] && in_storage[OreType.Iron] < 5) {
-        return;
-      }
       const iron_holders = find_all_with(
         [CT.HoldsOre, CT.IsTarget],
         (entity) => {
@@ -77,6 +73,9 @@ function setup() {
     },
     onHoverStart: (_entity) => {},
     onHoverEnd: (_entity) => {},
+    validationFunction: (_entity) => {
+      return amount_in_storage(OreType.Iron) >= 5;
+    },
   });
   make_button({
     x: width - BUTTON_WIDTH - BUTTON_PADDING,
@@ -91,6 +90,7 @@ function setup() {
     },
     onHoverStart: (_entity) => {},
     onHoverEnd: (_entity) => {},
+    validationFunction: null,
   });
 
   make_label(10, 10, () => {

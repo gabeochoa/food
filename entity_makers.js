@@ -45,6 +45,7 @@ function make_button({
   onClick,
   onHoverStart,
   onHoverEnd,
+  validationFunction,
 } = {}) {
   e = new Entity(x, y, [
     CT.RectRenderer,
@@ -58,7 +59,16 @@ function make_button({
   e.HasLabel.text = label;
   e.HasLabel.active = true;
   e.HasLabel.location = RectLocation.Center;
-  e.HasClickInteraction.callback = onClick;
+  e.HasClickInteraction.validator = validationFunction;
+  e.HasClickInteraction.callback = (entity) => {
+    if (entity.HasClickInteraction.validator) {
+      const result = entity.HasClickInteraction.validator(entity);
+      if (!result) {
+        return;
+      }
+    }
+    onClick();
+  };
   e.HasHoverInteraction.onStart = (entity) => {
     entity.RectRenderer.color = color(255, 0, 255, 255);
     onHoverStart(entity);
