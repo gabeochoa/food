@@ -221,7 +221,7 @@ function tick() {
               }
             );
             if (match == null) {
-              console.log("farmer ", entity.id, " could not find dropoff");
+              // console.log("farmer ", entity.id, " could not find dropoff");
               return;
             }
             const [t_x, t_y] = random_in_circle(
@@ -232,14 +232,14 @@ function tick() {
             );
             ht.target_id = make_target_location(t_x, t_y).id;
             match.IsTarget.parent_id = entity.id;
-            console.log("found farmer target: ", t_x, t_y);
+            // console.log("found farmer target: ", t_x, t_y);
             ht.onReached = () => {
               cb.cooldown--;
-              console.log("reached farmer target: ", t_x, t_y, cb.cooldown);
+              // console.log("reached farmer target: ", t_x, t_y, cb.cooldown);
               if (cb.cooldown > 0) return false;
               cb.cooldown = cb.cooldown_reset;
 
-              console.log("completed planting ");
+              // console.log("completed planting ");
               make_spawner(
                 t_x,
                 t_y,
