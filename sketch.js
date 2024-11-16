@@ -81,11 +81,10 @@ function setup() {
     for (let k of Object.keys(holders)) {
       texts.push("" + k + ": " + holders[k]);
     }
-    texts.push(new Date().toLocaleTimeString());
     return texts;
   });
 
-  makeLabelListJS(10, height - 100, () => {
+  makeLabelListWithButtonsJS(10, height - 100, () => {
     // calculate + render_roles
 
     let people = {};

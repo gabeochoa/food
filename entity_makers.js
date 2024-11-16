@@ -224,6 +224,76 @@ function makeLabelListJS(x, y, callback) {
   }, 1000);
 }
 
+// New function with buttons to update the role counts
+function makeLabelListWithButtonsJS(x, y, callback) {
+  // Store references to all created labels in an array
+  const labels = [];
+  const buttons = []; // Store references to buttons (for increment and decrement)
+
+  // Create the initial labels and add them to the DOM
+  const texts = callback(); // Get initial texts from the callback
+  let currentY = y;
+
+  // Define a way to modify the role allocation
+  let people = {};
+  for_components([CT.HasRole], (entity, role) => {
+    if (role.type == null) return;
+    if (!(role.type in people)) people[role.type] = 0;
+    people[role.type] += 1;
+  });
+
+  texts.forEach((textCallback, index) => {
+    // Create the label with dynamic content
+    const label = makeLabelJS(x, currentY, textCallback);
+    labels.push(label);
+
+    // Create "+" and "-" buttons
+    const plusButton = document.createElement("button");
+    plusButton.innerText = "+";
+    plusButton.style.position = "absolute";
+    plusButton.style.left = `${x + 100}px`; // Position right next to the label
+    plusButton.style.top = `${currentY}px`;
+    plusButton.style.fontSize = "8px";
+
+    const minusButton = document.createElement("button");
+    minusButton.innerText = "-";
+    minusButton.style.position = "absolute";
+    minusButton.style.left = `${x + 120}px`; // Position to the right of the "+" button
+    minusButton.style.top = `${currentY}px`;
+    minusButton.style.fontSize = "8px";
+
+    // Append buttons to the body
+    document.body.appendChild(plusButton);
+    document.body.appendChild(minusButton);
+
+    // Update the role counts when buttons are clicked
+    plusButton.addEventListener("click", () => {
+      const roleType = Object.keys(people)[index];
+      people[roleType] += 1;
+      labels[index].innerText = `${roleType}: ${people[roleType]}`; // Update label text
+    });
+
+    minusButton.addEventListener("click", () => {
+      const roleType = Object.keys(people)[index];
+      if (people[roleType] > 0) {
+        people[roleType] -= 1;
+        labels[index].innerText = `${roleType}: ${people[roleType]}`; // Update label text
+      }
+    });
+
+    currentY += 30; // Adjust the vertical position for the next label
+  });
+
+  // Update the labels periodically with new values from the callback
+  setInterval(() => {
+    const updatedTexts = callback(); // Get updated texts from the callback
+    // Update each label with the new text
+    updatedTexts.forEach((newText, index) => {
+      labels[index].innerText = newText;
+    });
+  }, 1000);
+}
+
 function makeButtonJS({
   x,
   y,
