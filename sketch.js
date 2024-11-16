@@ -10,9 +10,22 @@ let spawn_radius = 0;
 let NUM_SPAWNED = 10;
 let SPAWN_ORE_COST = 5;
 
+const MouseMode = {
+  Normal: "normal",
+  Build: "build",
+};
+
+const BuildingType = {
+  None: "none",
+  Bush: "bush",
+};
+
 let map_info = {
   zoomLevel: 1,
   center: [0, 0],
+  mouseMode: MouseMode.Normal,
+  onBuildingModePreview: () => {},
+  onBuildingModeClick: () => {},
 };
 
 function initial_berry_spawn() {
@@ -52,6 +65,8 @@ function setup() {
     }
     return texts.join("\n");
   });
+
+  make_berry_bush_button();
 }
 
 function on_second_tick() {}
@@ -62,6 +77,15 @@ function tick() {
     ticks -= 60;
     on_second_tick();
   }
+
+  //
+  for_components([CT.IsTemporary], (entity) => {
+    remove_entity(entity.id);
+  });
+  if (map_info.mouseMode == MouseMode.Build) {
+    map_info.onBuildingModePreview(mouseX, mouseY);
+  }
+  // // // // // // // //
 
   // find cloest pickup item
   for_components([CT.HasTarget, CT.HoldsItem], (entity, ht, ho) => {
@@ -186,11 +210,18 @@ function mouseDragged(event) {
 }
 
 function mouseClicked(event) {
-  for_components([CT.HasClickInteraction], (entity, interaction) => {
-    if (mouseInsideRect(entity.pos, entity.RectRenderer)) {
-      interaction.callback(entity);
-    }
-  });
+  if (map_info.mouseMode == MouseMode.Normal) {
+    for_components([CT.HasClickInteraction], (entity, interaction) => {
+      if (mouseInsideRect(entity.pos, entity.RectRenderer)) {
+        interaction.callback(entity);
+      }
+    });
+    return;
+  }
+  if (map_info.mouseMode == MouseMode.Build) {
+    map_info.onBuildingModeClick(mouseX, mouseY);
+    map_info.mouseMode = MouseMode.Normal;
+  }
 }
 
 function arrowKeymapMovement() {

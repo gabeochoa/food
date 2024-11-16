@@ -15,6 +15,13 @@ function make_ship(x, y) {
   entities[e.id] = e;
 }
 
+function make_preview_entity(x, y, w, h) {
+  e = new Entity(x, y, [CT.IsTemporary, CT.RectRenderer]);
+  e.RectRenderer.w = w;
+  e.RectRenderer.h = h;
+  entities[e.id] = e;
+}
+
 function make_drop(x, y, w, h, itemType) {
   e = new Entity(x, y, [
     CT.RectRenderer,

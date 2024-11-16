@@ -85,6 +85,9 @@ const CT = {
       type: "RoleType",
     },
   },
+  IsTemporary: {
+    name: "IsTemporary",
+  },
 };
 
 const EC = {
@@ -98,6 +101,7 @@ const EC = {
   HoldsItem: [],
   IsDropoff: [],
   HasRole: [],
+  IsTemporary: [],
   //
   // UI
   //

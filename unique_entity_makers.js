@@ -4,7 +4,7 @@ const BUTTON_WIDTH = 50;
 const BUTTON_HEIGHT = 20;
 const BUTTON_PADDING = 10;
 
-function make_ore_drop_button(y_off = 0) {
+function make_berry_bush_button(y_off = 0) {
   make_dynamic_button({
     x: width - BUTTON_WIDTH - BUTTON_PADDING,
     y: BUTTON_HEIGHT * y_off + BUTTON_PADDING,
@@ -12,35 +12,44 @@ function make_ore_drop_button(y_off = 0) {
     h: BUTTON_HEIGHT,
     label: () => {
       return (
-        "Request Food Drop \n(" +
+        "Plant Berry Bush\n" +
+        "(" +
         NUM_SPAWNED +
-        " food for " +
+        " berry for " +
         SPAWN_ORE_COST +
-        " iron ore )"
+        " berry)"
       );
     },
     onClick: () => {
-      const iron_holders = find_all_with(
-        [CT.HoldsOre, CT.IsTarget],
-        (entity) => {
-          return entity.HoldsOre.type == OreType.Iron;
+      map_info.mouseMode = MouseMode.Build;
+      map_info.onBuildingModePreview = (mx, my) => {
+        make_preview_entity(mx, my, 20, 20);
+      };
+      map_info.onBuildingModeClick = (mx, my) => {
+        //BuildingType.Bush;
+        make_drop(mx, my, 20, 20, ItemType.Berry);
+
+        const berry_holders = find_all_with(
+          [CT.HoldsItem, CT.IsTarget],
+          (entity) => {
+            return entity.HoldsItem.type == ItemType.Berry;
+          }
+        );
+        let i = SPAWN_ORE_COST;
+        for (let berry_holder of berry_holders) {
+          i = i - berry_holder.HoldsItem.amount;
+          berry_holder.HoldsItem.amount = 0;
+          if (i <= 0) {
+            berry_holder.HoldsItem.amount += -i;
+            break;
+          }
         }
-      );
-      let i = SPAWN_ORE_COST;
-      for (let iron_holder of iron_holders) {
-        i = i - iron_holder.HoldsOre.amount;
-        iron_holder.HoldsOre.amount = 0;
-        if (i <= 0) {
-          iron_holder.HoldsOre.amount += -i;
-          break;
-        }
-      }
-      spawn_N_food();
+      };
     },
     onHoverStart: (_entity) => {},
     onHoverEnd: (_entity) => {},
     validationFunction: (_entity) => {
-      return amount_in_storage(OreType.Iron) >= SPAWN_ORE_COST;
+      return amount_in_storage(ItemType.Berry) >= SPAWN_ORE_COST;
     },
   });
 }
