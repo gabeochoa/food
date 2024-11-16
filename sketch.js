@@ -2,7 +2,8 @@ const PSIZE = 10;
 let entities = {};
 
 let SHIP_STORAGE = 1;
-let SPEED = 0.75;
+// TODO
+let SPEED = 2; // 0.75;
 
 let ticks = 0;
 
@@ -84,16 +85,18 @@ function tick() {
     on_second_tick();
   }
 
+  // runs whenevr the mouse is still in an active hover state
   for_components([CT.HasHoverInteraction], (entity, interaction) => {
     if (interaction.active) {
       if (interaction.whileInside) interaction.whileInside(entity);
     }
   });
 
-  //
+  // remove any temporaries
   for_components([CT.IsTemporary], (entity) => {
     remove_entity(entity.id);
   });
+  // add the new temporaries for rendering later
   if (map_info.mouseMode == MouseMode.Build) {
     map_info.onBuildingModePreview(mouseX, mouseY);
   }
