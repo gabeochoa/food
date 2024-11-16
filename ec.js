@@ -94,7 +94,7 @@ const CT = {
     name: "IsSpawner",
     fields: {
       timer: "Timer",
-      type: "ItemType",
+      onSpawn: "Function",
       radius: "Number",
       amount: "Amount",
     },
@@ -134,9 +134,12 @@ const EC = {
 const RoleType = {
   Grunt: "grunt",
   Farmer: "farmer",
+  Builder: "builder",
 };
 
 const ItemType = {
+  _Grunt: "grunt",
+  //
   Berry: "berry",
   Iron: "iron",
 };

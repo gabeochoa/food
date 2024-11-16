@@ -238,6 +238,7 @@ function tick() {
               // console.log("reached farmer target: ", t_x, t_y, cb.cooldown);
               if (cb.cooldown > 0) return false;
               cb.cooldown = cb.cooldown_reset;
+              remove_entity(ht.target_id);
 
               // console.log("completed planting ");
               make_spawner(
@@ -245,7 +246,9 @@ function tick() {
                 t_y,
                 15,
                 15,
-                ItemType.Berry,
+                (x, y) => {
+                  make_item(x, y, ItemType.Berry);
+                },
                 10, // amount
                 50 // radi
               );
@@ -365,7 +368,7 @@ function tick() {
     iss.timer = iss.timer_reset;
     //
     const [x, y] = random_in_circle(entity.pos.x, entity.pos.y, iss.radius);
-    make_item(x, y, iss.type);
+    iss.onSpawn(x, y);
     iss.amount -= 1;
 
     if (iss.amount == 0) {

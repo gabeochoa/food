@@ -42,7 +42,7 @@ function make_preview_entity(x, y, w, h) {
   entities[e.id] = e;
 }
 
-function make_spawner(x, y, w, h, itemType, amount, radius) {
+function make_spawner(x, y, w, h, onSpawn, amount, radius) {
   e = new Entity(x, y, [
     CT.RectRenderer,
     CT.HasHoverInteraction,
@@ -52,7 +52,7 @@ function make_spawner(x, y, w, h, itemType, amount, radius) {
   e.RectRenderer.w = w;
   e.RectRenderer.h = h;
 
-  e.IsSpawner.type = itemType;
+  e.IsSpawner.onSpawn = onSpawn;
   e.IsSpawner.amount = amount;
   e.IsSpawner.radius = radius;
   e.IsSpawner.timer = 250;
