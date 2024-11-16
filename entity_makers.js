@@ -1,5 +1,6 @@
-function make_ore(x, y) {
+function make_ore(x, y, type) {
   e = new Entity(x, y, [CT.CircleRenderer, CT.IsOre, CT.IsTarget]);
+  e.IsOre.type = type;
   entities[e.id] = e;
 }
 
