@@ -23,11 +23,19 @@ function make_berry_bush_button(y_off = 0) {
     onClick: () => {
       map_info.mouseMode = MouseMode.Build;
       map_info.onBuildingModePreview = (mx, my) => {
-        make_preview_entity(mx, my, 20, 20);
+        make_preview_entity(mx, my, 15, 15);
       };
       map_info.onBuildingModeClick = (mx, my) => {
         //BuildingType.Bush;
-        make_drop(mx, my, 20, 20, ItemType.Berry);
+        make_spawner(
+          mx,
+          my,
+          15,
+          15,
+          ItemType.Berry,
+          10, // amount
+          50 // radi
+        );
 
         const berry_holders = find_all_with(
           [CT.HoldsItem, CT.IsTarget],

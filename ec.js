@@ -60,6 +60,7 @@ const CT = {
       active: "Boolean",
       //
       onStart: "Function",
+      whileInside: "Function",
       onEnd: "Function",
     },
   },
@@ -88,6 +89,15 @@ const CT = {
   IsTemporary: {
     name: "IsTemporary",
   },
+  IsSpawner: {
+    name: "IsSpawner",
+    fields: {
+      timer: "Timer",
+      type: "ItemType",
+      radius: "Number",
+      amount: "Amount",
+    },
+  },
 };
 
 const EC = {
@@ -102,6 +112,7 @@ const EC = {
   IsDropoff: [],
   HasRole: [],
   IsTemporary: [],
+  IsSpawner: [],
   //
   // UI
   //
@@ -210,6 +221,12 @@ class Entity {
           break;
         case "RoleType":
           fields[key] = RoleType.Grunt;
+          break;
+        // this one doesnt seem to work...
+        case "Timer":
+          // in ms
+          fields[key] = 0;
+          fields[key + "_reset"] = 1000;
           break;
         default:
           console.warn("Missing handler for ", value);

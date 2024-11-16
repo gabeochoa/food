@@ -22,6 +22,54 @@ function make_preview_entity(x, y, w, h) {
   entities[e.id] = e;
 }
 
+function make_spawner(x, y, w, h, itemType, amount, radius) {
+  e = new Entity(x, y, [
+    CT.RectRenderer,
+    CT.HasHoverInteraction,
+    CT.HasLabel,
+    CT.IsSpawner,
+  ]);
+  e.RectRenderer.w = w;
+  e.RectRenderer.h = h;
+
+  e.IsSpawner.type = itemType;
+  e.IsSpawner.amount = amount;
+  e.IsSpawner.radius = radius;
+  e.IsSpawner.timer = 250;
+  e.IsSpawner.timer_reset = 250;
+
+  e.HasHoverInteraction.whileInside = (entity) => {
+    const next_spawn_pct =
+      100 * (entity.IsSpawner.timer / entity.IsSpawner.timer_reset);
+
+    let next_spawn = "";
+    for (let n = 0; n < 100; n += 10) {
+      if (next_spawn_pct < n) {
+        next_spawn += "░"; // alt-176
+      } else {
+        next_spawn += "▓"; // alt-178
+      }
+    }
+
+    const amount_remaining =
+      "" +
+      entity.IsSpawner.type +
+      ": " +
+      entity.IsSpawner.amount +
+      " remaining";
+    entity.HasLabel.text = amount_remaining + "\n\n\n" + next_spawn;
+  };
+
+  e.HasHoverInteraction.onStart = (entity) => {
+    e.HasHoverInteraction.whileInside(entity);
+    entity.HasLabel.active = true;
+  };
+  e.HasHoverInteraction.onEnd = (entity) => {
+    entity.HasLabel.active = false;
+  };
+  entities[e.id] = e;
+}
+
 function make_drop(x, y, w, h, itemType) {
   e = new Entity(x, y, [
     CT.RectRenderer,
@@ -34,9 +82,11 @@ function make_drop(x, y, w, h, itemType) {
   e.RectRenderer.w = w;
   e.RectRenderer.h = h;
   e.HoldsItem.type = itemType;
-  e.HasHoverInteraction.onStart = (entity) => {
+  e.HasHoverInteraction.whileInside = (entity) => {
     entity.HasLabel.text =
       "" + entity.HoldsItem.type + ": " + entity.HoldsItem.amount;
+  };
+  e.HasHoverInteraction.onStart = (entity) => {
     entity.HasLabel.active = true;
   };
   e.HasHoverInteraction.onEnd = (entity) => {

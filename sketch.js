@@ -28,6 +28,12 @@ let map_info = {
   onBuildingModeClick: () => {},
 };
 
+function random_in_circle(x, y, radius) {
+  let rad = (radius / 2) * Math.random();
+  let angle = 2 * PI * Math.random();
+  return [x + Math.floor(cos(angle) * rad), y + Math.floor(sin(angle) * rad)];
+}
+
 function initial_berry_spawn() {
   i = 0;
   spawn_radius = 300;
@@ -77,6 +83,12 @@ function tick() {
     ticks -= 60;
     on_second_tick();
   }
+
+  for_components([CT.HasHoverInteraction], (entity, interaction) => {
+    if (interaction.active) {
+      if (interaction.whileInside) interaction.whileInside(entity);
+    }
+  });
 
   //
   for_components([CT.IsTemporary], (entity) => {
@@ -174,6 +186,21 @@ function tick() {
   // process accel
   for_components([CT.HasVelocity], (entity, hv) => {
     entity.pos.add(hv.vel);
+  });
+
+  for_components([CT.IsSpawner], (entity, iss) => {
+    console.log(iss);
+    iss.timer -= 1;
+    if (iss.timer > 0) return;
+    iss.timer = iss.timer_reset;
+    //
+    const [x, y] = random_in_circle(entity.pos.x, entity.pos.y, iss.radius);
+    make_item(x, y, iss.type);
+    iss.amount -= 1;
+
+    if (iss.amount == 0) {
+      remove_entity(entity.id);
+    }
   });
 }
 
