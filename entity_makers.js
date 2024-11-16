@@ -8,6 +8,12 @@ function get_base_ship_components() {
   return [CT.HasVelocity, CT.SquareRenderer, CT.HasRole];
 }
 
+function make_target_location(x, y) {
+  e = new Entity(x, y, [CT.IsTarget]);
+  entities[e.id] = e;
+  return e;
+}
+
 function make_ship(x, y) {
   e = new Entity(x, y, [
     ...get_base_ship_components(),
@@ -18,7 +24,14 @@ function make_ship(x, y) {
 }
 
 function make_farmer(x, y) {
-  e = new Entity(x, y, [...get_base_ship_components()]);
+  e = new Entity(x, y, [
+    ...get_base_ship_components(),
+    CT.HasTarget,
+    CT.CanBuild,
+  ]);
+  e.HasRole.type = RoleType.Farmer;
+  e.CanBuild.cooldown = to_60fps(5000);
+  e.CanBuild.cooldown_reset = to_60fps(5000);
   entities[e.id] = e;
 }
 

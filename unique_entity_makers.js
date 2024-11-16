@@ -80,7 +80,11 @@ function make_unlock_farmer_button(y_off = 0) {
       const grunts = find_all_with([CT.HasRole], (entity) => {
         return entity.HasRole.type == RoleType.Grunt;
       });
-      grunts[0].HasRole.type = RoleType.Farmer;
+
+      const grunt = grunts[0];
+      make_farmer(grunt.pos.x, grunt.pos.y);
+      remove_entity(grunt.id);
+
       global_random_data.max_allocation[RoleType.Farmer] = 1;
       global_random_data.role_allocation[RoleType.Farmer] = 1;
 

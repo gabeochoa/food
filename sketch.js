@@ -11,6 +11,10 @@ let spawn_radius = 0;
 let NUM_SPAWNED = 10;
 let SPAWN_ORE_COST = 5;
 
+function to_60fps(ms) {
+  return ms / 16.6;
+}
+
 const MouseMode = {
   Normal: "normal",
   Build: "build",
@@ -85,6 +89,14 @@ function setup() {
   make_ship(0, 0);
   make_ship(0, 0);
   make_drop(50, 50, 20, 20, ItemType.Berry);
+
+  // TODO make initial drop have 100 berries
+  {
+    for_components([CT.HoldsItem, CT.IsTarget], (entity, ho) => {
+      if (ho.type == null) return;
+      ho.amount += 100;
+    });
+  }
 
   makeLabelJS(10, 10, () => {
     return "num ents " + Object.keys(entities).length;
@@ -175,6 +187,72 @@ function tick() {
   }
   // // // // // // // //
 
+  for_components([CT.HasRole, CT.CanBuild], (entity, role, canBuild) => {
+    if (role.type != RoleType.Farmer) return;
+    if (canBuild.building_type != BuildingType.None) return;
+    if (amount_in_storage(ItemType.Berry) < 10) return;
+    canBuild.building_type = BuildingType.Bush;
+    spend_amount(ItemType.Berry, 10);
+    console.log("farmer ", entity.id, "gonna build soon :) ");
+  });
+
+  for_components(
+    [CT.HasRole, CT.CanBuild, CT.HasTarget],
+    (entity, role, cb, ht) => {
+      if (cb.building_type == BuildingType.None) return;
+      if (ht.target_id != null) return;
+      //
+
+      switch (role.type) {
+        case RoleType.Farmer:
+          {
+            let match = find_closest_with_all(
+              [CT.HoldsItem, CT.IsDropoff],
+              entity.pos,
+              (e) => {
+                // does this need to be dynamic?
+                return e.HoldsItem.type == ItemType.Berry;
+              }
+            );
+            if (match == null) {
+              console.log("farmer ", entity.id, " could not find dropoff");
+              return;
+            }
+            const [t_x, t_y] = random_in_circle(match.pos.x, match.pos.y, 50);
+            ht.target_id = make_target_location(t_x, t_y).id;
+            match.IsTarget.parent_id = entity.id;
+            console.log("found farmer target: ", t_x, t_y);
+            ht.onReached = () => {
+              cb.cooldown--;
+              console.log("reached farmer target: ", t_x, t_y, cb.cooldown);
+              if (cb.cooldown > 0) return false;
+              cb.cooldown = cb.cooldown_reset;
+
+              console.log("completed planting ");
+              make_spawner(
+                t_x,
+                t_y,
+                15,
+                15,
+                ItemType.Berry,
+                10, // amount
+                50 // radi
+              );
+              return true;
+            };
+          }
+          break;
+        case RoleType.Grunt:
+        default:
+          return;
+      }
+      // find a place to build,
+      // move there
+      // place the item
+      // mark building type noine
+    }
+  );
+
   // find cloest pickup item
   for_components([CT.HasTarget, CT.HoldsItem], (entity, ht, ho) => {
     if (ho.amount >= SHIP_STORAGE) return;
@@ -193,6 +271,26 @@ function tick() {
     if (match == null) return;
     ht.target_id = match.id;
     match.IsTarget.parent_id = entity.id;
+    ht.onReached = (entity, target) => {
+      const ho = entity.HoldsItem;
+      if (has_(target.id, CT.IsItem)) {
+        if (ho.type != null && ho.type != target.IsItem.type) return;
+
+        ho.type = target.IsItem.type;
+        ho.amount += 1;
+        remove_entity(target.id);
+        //   console.log(entity.id, "Picked up", ho.type);
+      }
+
+      if (has_(target.id, CT.IsDropoff)) {
+        if (ho.type != null && ho.type != target.HoldsItem.type) return;
+        target.HoldsItem.amount += ho.amount;
+        //   console.log("Dropped off ", ho.type, "now has", target.HoldsItem.amount);
+        ho.amount = 0;
+        ho.type = null;
+      }
+      return true;
+    };
   });
 
   // find drop off for item
@@ -228,7 +326,7 @@ function tick() {
 
   // pick up object
   // drop off object
-  for_components([CT.HasTarget, CT.HoldsItem], (entity, ht, ho) => {
+  for_components([CT.HasTarget], (entity, ht) => {
     if (ht.target_id == null) return;
     target = entities[ht.target_id];
     if (target == null) {
@@ -237,24 +335,10 @@ function tick() {
     }
     if (distance(entity.pos, target.pos) > 2) return;
 
-    if (has_(target.id, CT.IsItem)) {
-      if (ho.type != null && ho.type != target.IsItem.type) return;
-
-      ho.type = target.IsItem.type;
-      ho.amount += 1;
-      remove_entity(target.id);
-      //   console.log(entity.id, "Picked up", ho.type);
+    const finished = ht.onReached(entity, target);
+    if (finished) {
+      ht.target_id = null;
     }
-
-    if (has_(target.id, CT.IsDropoff)) {
-      if (ho.type != null && ho.type != target.HoldsItem.type) return;
-      target.HoldsItem.amount += ho.amount;
-      //   console.log("Dropped off ", ho.type, "now has", target.HoldsItem.amount);
-      ho.amount = 0;
-      ho.type = null;
-    }
-
-    ht.target_id = null;
 
     return;
   });

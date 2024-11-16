@@ -23,6 +23,7 @@ const CT = {
     name: "HasTarget",
     fields: {
       target_id: "ID",
+      onReached: "Function",
     },
   },
   IsTarget: {
@@ -98,6 +99,13 @@ const CT = {
       amount: "Amount",
     },
   },
+  CanBuild: {
+    name: "CanBuild",
+    fields: {
+      building_type: "BuildingType",
+      cooldown: "Timer",
+    },
+  },
 };
 
 const EC = {
@@ -113,6 +121,7 @@ const EC = {
   HasRole: [],
   IsTemporary: [],
   IsSpawner: [],
+  CanBuild: [],
   //
   // UI
   //
@@ -221,6 +230,9 @@ class Entity {
           break;
         case "RoleType":
           fields[key] = RoleType.Grunt;
+          break;
+        case "BuildingType":
+          fields[key] = BuildingType.None;
           break;
         // this one doesnt seem to work...
         case "Timer":
