@@ -15,16 +15,42 @@ let map_info = {
   center: [0, 0],
 };
 
+function initial_berry_spawn() {
+  i = 0;
+  spawn_radius = 300;
+  while (i < 25) {
+    let rad = (spawn_radius / 2) * Math.random();
+    let angle = 2 * PI * Math.random();
+    make_item(
+      width / 2 + Math.floor(cos(angle) * rad),
+      height / 2 + Math.floor(sin(angle) * rad),
+      ItemType.Berry
+    );
+    i++;
+  }
+}
+
 function setup() {
   frameRate(60);
   let cnv = createCanvas(400, 300);
   cnv.mouseWheel(mouseScrolled);
 
-  make_item(100, 100, ItemType.Iron);
+  initial_berry_spawn();
   make_ship(0, 0);
+  make_drop(50, 50, 20, 20, ItemType.Berry);
 
   make_label(10, 10, () => {
     return "num ents " + Object.keys(entities).length;
+  });
+
+  make_label_list(10, 20, () => {
+    // calculate + render_holders
+    let holders = audit_storage();
+    let texts = [];
+    for (let k of Object.keys(holders)) {
+      texts.push("" + k + ": " + holders[k]);
+    }
+    return texts.join("\n");
   });
 }
 

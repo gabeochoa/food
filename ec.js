@@ -79,6 +79,12 @@ const CT = {
     name: "HasAbsolutePosition",
     fields: {},
   },
+  HasRole: {
+    name: "HasRole",
+    fields: {
+      type: "RoleType",
+    },
+  },
 };
 
 const EC = {
@@ -91,6 +97,7 @@ const EC = {
   IsItem: [],
   HoldsItem: [],
   IsDropoff: [],
+  HasRole: [],
   //
   // UI
   //
@@ -100,7 +107,13 @@ const EC = {
   HasAbsolutePosition: [],
 };
 
+const RoleType = {
+  Grunt: "grunt",
+  Farmer: "farmer",
+};
+
 const ItemType = {
+  Berry: "berry",
   Iron: "iron",
 };
 
@@ -190,6 +203,9 @@ class Entity {
           break;
         case "RectLocation":
           fields[key] = RectLocation.TopLeft;
+          break;
+        case "RoleType":
+          fields[key] = RoleType.Grunt;
           break;
         default:
           console.warn("Missing handler for ", value);

@@ -10,11 +10,12 @@ function make_ship(x, y) {
     CT.SquareRenderer,
     CT.HasTarget,
     CT.HoldsItem,
+    CT.HasRole,
   ]);
   entities[e.id] = e;
 }
 
-function make_drop(x, y, w, h, oreType) {
+function make_drop(x, y, w, h, itemType) {
   e = new Entity(x, y, [
     CT.RectRenderer,
     CT.HoldsItem,
@@ -25,7 +26,7 @@ function make_drop(x, y, w, h, oreType) {
   ]);
   e.RectRenderer.w = w;
   e.RectRenderer.h = h;
-  e.HoldsItem.type = oreType;
+  e.HoldsItem.type = itemType;
   e.HasHoverInteraction.onStart = (entity) => {
     entity.HasLabel.text =
       "" + entity.HoldsItem.type + ": " + entity.HoldsItem.amount;
