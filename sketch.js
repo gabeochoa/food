@@ -38,10 +38,16 @@ let global_random_data = {
   max_allocation: {},
 };
 
-function random_in_circle(x, y, radius) {
-  let rad = (radius / 2) * Math.random();
-  let angle = 2 * PI * Math.random();
-  return [x + Math.floor(cos(angle) * rad), y + Math.floor(sin(angle) * rad)];
+function random_in_circle(x, y, radius, minRadius = 0) {
+  if (minRadius > radius) {
+    throw new Error("minRadius cannot be greater than radius.");
+  }
+  let rad = minRadius + Math.random() * (radius - minRadius);
+  let angle = 2 * Math.PI * Math.random();
+  return [
+    x + Math.floor(Math.cos(angle) * rad),
+    y + Math.floor(Math.sin(angle) * rad),
+  ];
 }
 
 function initial_berry_spawn() {
@@ -218,7 +224,12 @@ function tick() {
               console.log("farmer ", entity.id, " could not find dropoff");
               return;
             }
-            const [t_x, t_y] = random_in_circle(match.pos.x, match.pos.y, 50);
+            const [t_x, t_y] = random_in_circle(
+              match.pos.x,
+              match.pos.y,
+              200,
+              100
+            );
             ht.target_id = make_target_location(t_x, t_y).id;
             match.IsTarget.parent_id = entity.id;
             console.log("found farmer target: ", t_x, t_y);
