@@ -141,6 +141,21 @@ function amount_in_storage(item_type) {
   return 0;
 }
 
+function spend_amount(item_type, amount) {
+  const item_holders = find_all_with([CT.HoldsItem, CT.IsTarget], (entity) => {
+    return entity.HoldsItem.type == item_type;
+  });
+  let i = amount;
+  for (let item_holder of item_holders) {
+    i = i - item_holder.HoldsItem.amount;
+    item_holder.HoldsItem.amount = 0;
+    if (i <= 0) {
+      item_holder.HoldsItem.amount += -i;
+      break;
+    }
+  }
+}
+
 // Renderer system
 
 function render_circles() {

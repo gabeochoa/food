@@ -36,22 +36,7 @@ function make_berry_bush_button(y_off = 0) {
           10, // amount
           50 // radi
         );
-
-        const berry_holders = find_all_with(
-          [CT.HoldsItem, CT.IsTarget],
-          (entity) => {
-            return entity.HoldsItem.type == ItemType.Berry;
-          }
-        );
-        let i = SPAWN_ORE_COST;
-        for (let berry_holder of berry_holders) {
-          i = i - berry_holder.HoldsItem.amount;
-          berry_holder.HoldsItem.amount = 0;
-          if (i <= 0) {
-            berry_holder.HoldsItem.amount += -i;
-            break;
-          }
-        }
+        spend_amount(ItemType.Berry, SPAWN_ORE_COST);
       };
     },
     onHoverStart: (_entity) => {},
@@ -99,21 +84,8 @@ function make_unlock_farmer_button(y_off = 0) {
       global_random_data.max_allocation[RoleType.Farmer] = 1;
       global_random_data.role_allocation[RoleType.Farmer] = 1;
 
-      const berry_holders = find_all_with(
-        [CT.HoldsItem, CT.IsTarget],
-        (entity) => {
-          return entity.HoldsItem.type == ItemType.Berry;
-        }
-      );
-      let i = 20;
-      for (let berry_holder of berry_holders) {
-        i = i - berry_holder.HoldsItem.amount;
-        berry_holder.HoldsItem.amount = 0;
-        if (i <= 0) {
-          berry_holder.HoldsItem.amount += -i;
-          break;
-        }
-      }
+      spend_amount(ItemType.Berry, 20);
+
       return {
         shouldCleanup: true,
       };
