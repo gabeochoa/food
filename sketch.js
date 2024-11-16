@@ -266,9 +266,25 @@ function mouseClicked(event) {
   });
 }
 
+function arrowKeymapMovement() {
+  if (keyIsDown(LEFT_ARROW)) {
+    map_info["center"][0] += 1;
+  }
+  if (keyIsDown(RIGHT_ARROW)) {
+    map_info["center"][0] -= 1;
+  }
+  if (keyIsDown(DOWN_ARROW)) {
+    map_info["center"][1] -= 1;
+  }
+  if (keyIsDown(UP_ARROW)) {
+    map_info["center"][1] += 1;
+  }
+}
+
 function draw() {
   tick();
 
+  arrowKeymapMovement();
   //
 
   push();
