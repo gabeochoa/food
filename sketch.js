@@ -20,61 +20,12 @@ function setup() {
   let cnv = createCanvas(400, 300);
   cnv.mouseWheel(mouseScrolled);
 
-  spawn_radius = width / 2;
-  //
-
-  make_ore(width / 4, height / 4);
-  remove_entity(0);
-
-  make_ore(width / 4, height / 4);
-  make_ship(width / 2, height / 2);
-
-  make_ship(width / 4, height / 2);
-  make_drop(width / 6, height / 6, PSIZE * 2, PSIZE * 2, OreType.Iron);
-
-  //
-  print(EC);
-  print(entities);
-
-  if (count_entities_with(CT.IsOre) != 1) {
-    console.error("remove isnt working", count_entities_with(CT.IsOre));
-  }
-
-  spawn_N_ore();
-  make_ore_drop_button(0);
-  make_ship_speed_button(1);
+  make_item(100, 100, ItemType.Iron);
+  make_ship(0, 0);
 
   make_label(10, 10, () => {
     return "num ents " + Object.keys(entities).length;
   });
-
-  make_label_list(10, 20, () => {
-    // calculate + render_holders
-    let holders = audit_storage();
-    let texts = [];
-    for (let k of Object.keys(holders)) {
-      texts.push("" + k + ": " + holders[k]);
-    }
-    return texts.join("\n");
-  });
-}
-
-function spawn_N_ore() {
-  i = 0;
-  while (i < NUM_SPAWNED) {
-    // console.log("spawning a new ore")
-
-    let rad = (spawn_radius / 2) * Math.random();
-    let angle = 2 * PI * Math.random();
-    make_ore(
-      width / 2 + Math.floor(cos(angle) * rad),
-      height / 2 + Math.floor(sin(angle) * rad),
-      OreType.Iron
-    );
-    i++;
-  }
-  spawn_radius += 75;
-  NUM_SPAWNED = Math.round(NUM_SPAWNED * 1.2);
 }
 
 function on_second_tick() {}
@@ -86,19 +37,19 @@ function tick() {
     on_second_tick();
   }
 
-  // find cloest ore
-  for_components([CT.HasTarget, CT.HoldsOre], (entity, ht, ho) => {
+  // find cloest pickup item
+  for_components([CT.HasTarget, CT.HoldsItem], (entity, ht, ho) => {
     if (ho.amount >= SHIP_STORAGE) return;
     if (ht.target_id != null) return;
     let match = find_closest_with_all(
-      [CT.IsOre, CT.IsTarget],
+      [CT.IsItem, CT.IsTarget],
       entity.pos,
       (e) => {
         if (ho.amount == 0) return true;
         if (is_valid_entity(e.IsTarget.parent_id)) {
           return;
         }
-        return ho.type == e.IsOre.type;
+        return ho.type == e.IsItem.type;
       }
     );
     if (match == null) return;
@@ -106,15 +57,15 @@ function tick() {
     match.IsTarget.parent_id = entity.id;
   });
 
-  // find drop off for ore
-  for_components([CT.HasTarget, CT.HoldsOre], (entity, ht, ho) => {
+  // find drop off for item
+  for_components([CT.HasTarget, CT.HoldsItem], (entity, ht, ho) => {
     if (ho.amount == 0) return;
     if (ht.target_id != null) return;
     let match = find_closest_with_all(
-      [CT.HoldsOre, CT.IsDropoff],
+      [CT.HoldsItem, CT.IsDropoff],
       entity.pos,
       (e) => {
-        return ho.type == e.HoldsOre.type;
+        return ho.type == e.HoldsItem.type;
       }
     );
     if (match == null) {
@@ -139,7 +90,7 @@ function tick() {
 
   // pick up object
   // drop off object
-  for_components([CT.HasTarget, CT.HoldsOre], (entity, ht, ho) => {
+  for_components([CT.HasTarget, CT.HoldsItem], (entity, ht, ho) => {
     if (ht.target_id == null) return;
     target = entities[ht.target_id];
     if (target == null) {
@@ -148,19 +99,19 @@ function tick() {
     }
     if (distance(entity.pos, target.pos) > 2) return;
 
-    if (has_(target.id, CT.IsOre)) {
-      if (ho.type != null && ho.type != target.IsOre.type) return;
+    if (has_(target.id, CT.IsItem)) {
+      if (ho.type != null && ho.type != target.IsItem.type) return;
 
-      ho.type = target.IsOre.type;
+      ho.type = target.IsItem.type;
       ho.amount += 1;
       remove_entity(target.id);
       //   console.log(entity.id, "Picked up", ho.type);
     }
 
     if (has_(target.id, CT.IsDropoff)) {
-      if (ho.type != null && ho.type != target.HoldsOre.type) return;
-      target.HoldsOre.amount += ho.amount;
-      //   console.log("Dropped off ", ho.type, "now has", target.HoldsOre.amount);
+      if (ho.type != null && ho.type != target.HoldsItem.type) return;
+      target.HoldsItem.amount += ho.amount;
+      //   console.log("Dropped off ", ho.type, "now has", target.HoldsItem.amount);
       ho.amount = 0;
       ho.type = null;
     }

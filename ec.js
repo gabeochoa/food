@@ -31,16 +31,16 @@ const CT = {
       parent_id: "ID",
     },
   },
-  IsOre: {
-    name: "IsOre",
+  IsItem: {
+    name: "IsItem",
     fields: {
-      type: "OreType",
+      type: "ItemType",
     },
   },
-  HoldsOre: {
-    name: "HoldsOre",
+  HoldsItem: {
+    name: "HoldsItem",
     fields: {
-      type: "OreType",
+      type: "ItemType",
       amount: "Amount",
     },
   },
@@ -88,8 +88,8 @@ const EC = {
   HasVelocity: [],
   HasTarget: [],
   IsTarget: [],
-  IsOre: [],
-  HoldsOre: [],
+  IsItem: [],
+  HoldsItem: [],
   IsDropoff: [],
   //
   // UI
@@ -100,14 +100,14 @@ const EC = {
   HasAbsolutePosition: [],
 };
 
-const OreType = {
+const ItemType = {
   Iron: "iron",
 };
 
-function randomOre() {
-  const ores = Object.values(OreType);
-  const index = Math.floor(Math.random() * ores.length);
-  return ores[index];
+function randomItem() {
+  const items = Object.values(ItemType);
+  const index = Math.floor(Math.random() * items.length);
+  return items[index];
 }
 
 const UI_Interaction_Type = {
@@ -140,7 +140,7 @@ class Entity {
   }
 
   add_component(component) {
-    // console.log(component)
+    // console.log("adding component: ", component);
     if (!(component.name in EC)) {
       console.error("component ", component, " missing from EC", EC);
     }
@@ -161,8 +161,8 @@ class Entity {
         case "ID":
           fields[key] = null;
           break;
-        case "OreType":
-          fields[key] = randomOre();
+        case "ItemType":
+          fields[key] = randomItem();
           break;
         case "Amount":
           fields[key] = 0;

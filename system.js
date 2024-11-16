@@ -103,7 +103,7 @@ function find_all_with(cmps, filter_fn) {
 
 function audit_storage() {
   let holders = {};
-  for_components([CT.HoldsOre, CT.IsTarget], (entity, ho) => {
+  for_components([CT.HoldsItem, CT.IsTarget], (entity, ho) => {
     if (ho.type == null) return;
     if (!(ho.type in holders)) holders[ho.type] = 0;
     holders[ho.type] += ho.amount;
@@ -125,9 +125,9 @@ function mouseInsideRect(pos, rectRenderer) {
   return false;
 }
 
-function amount_in_storage(ore_type) {
+function amount_in_storage(item_type) {
   const in_storage = audit_storage();
-  if (ore_type in in_storage) return in_storage[ore_type];
+  if (item_type in in_storage) return in_storage[item_type];
   return 0;
 }
 

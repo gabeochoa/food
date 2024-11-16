@@ -1,6 +1,6 @@
-function make_ore(x, y, type) {
-  e = new Entity(x, y, [CT.CircleRenderer, CT.IsOre, CT.IsTarget]);
-  e.IsOre.type = type;
+function make_item(x, y, type) {
+  e = new Entity(x, y, [CT.CircleRenderer, CT.IsItem, CT.IsTarget]);
+  e.IsItem.type = type;
   entities[e.id] = e;
 }
 
@@ -9,7 +9,7 @@ function make_ship(x, y) {
     CT.HasVelocity,
     CT.SquareRenderer,
     CT.HasTarget,
-    CT.HoldsOre,
+    CT.HoldsItem,
   ]);
   entities[e.id] = e;
 }
@@ -17,7 +17,7 @@ function make_ship(x, y) {
 function make_drop(x, y, w, h, oreType) {
   e = new Entity(x, y, [
     CT.RectRenderer,
-    CT.HoldsOre,
+    CT.HoldsItem,
     CT.IsDropoff,
     CT.IsTarget,
     CT.HasHoverInteraction,
@@ -25,10 +25,10 @@ function make_drop(x, y, w, h, oreType) {
   ]);
   e.RectRenderer.w = w;
   e.RectRenderer.h = h;
-  e.HoldsOre.type = oreType;
+  e.HoldsItem.type = oreType;
   e.HasHoverInteraction.onStart = (entity) => {
     entity.HasLabel.text =
-      "" + entity.HoldsOre.type + ": " + entity.HoldsOre.amount;
+      "" + entity.HoldsItem.type + ": " + entity.HoldsItem.amount;
     entity.HasLabel.active = true;
   };
   e.HasHoverInteraction.onEnd = (entity) => {
