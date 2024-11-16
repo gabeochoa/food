@@ -199,101 +199,81 @@ function makeLabelJS(x, y, label_content) {
   return label;
 }
 
-function makeLabelListJS(x, y, callback) {
-  // Store references to all created labels in an array
-  const labels = [];
+function addAllocationButtons(x, y, index, onPlus, onMinus) {
+  // Create "+" and "-" buttons
+  const plusButton = document.createElement("button");
+  plusButton.innerText = "+";
+  plusButton.style.position = "absolute";
+  plusButton.style.left = `${x + 100}px`; // Position right next to the label
+  plusButton.style.top = `${y}px`;
+  plusButton.style.fontSize = "8px";
 
-  // Create the initial labels and add them to the DOM
-  const texts = callback(); // Get initial texts from the callback
-  let currentY = y;
+  const minusButton = document.createElement("button");
+  minusButton.innerText = "-";
+  minusButton.style.position = "absolute";
+  minusButton.style.left = `${x + 120}px`; // Position to the right of the "+" button
+  minusButton.style.top = `${y}px`;
+  minusButton.style.fontSize = "8px";
 
-  texts.forEach((textCallback) => {
-    const label = makeLabelJS(x, currentY, textCallback); // Create each label with dynamic text
-    labels.push(label); // Store the label for later updates
-    document.body.appendChild(label);
-    currentY += 30; // Adjust the vertical position for the next label
+  // Append buttons to the body
+  document.body.appendChild(plusButton);
+  document.body.appendChild(minusButton);
+
+  // Update the role counts when buttons are clicked
+  plusButton.addEventListener("click", () => {
+    onPlus(index);
   });
 
-  // Update the labels periodically with new values from the callback
-  setInterval(() => {
-    const updatedTexts = callback(); // Get updated texts from the callback
-    // Update each label with the new text
-    updatedTexts.forEach((newText, index) => {
-      labels[index].innerText = newText;
-    });
-  }, 1000);
+  minusButton.addEventListener("click", () => {
+    onMinus(index);
+  });
 }
 
-// New function with buttons to update the role counts
-function makeLabelListWithButtonsJS(x, y, callback) {
-  // Store references to all created labels in an array
+function makeLabelListJS(x, y, callback, perItemOptions = null) {
   const labels = [];
-  const buttons = []; // Store references to buttons (for increment and decrement)
 
-  // Create the initial labels and add them to the DOM
-  const texts = callback(); // Get initial texts from the callback
-  let currentY = y;
+  // Helper function to clear all existing labels
+  function clearExistingLabels() {
+    labels.forEach((label) => label.remove()); // Remove all labels from the DOM
+    labels.length = 0; // Clear the labels array
+  }
 
-  // Define a way to modify the role allocation
-  let people = {};
-  for_components([CT.HasRole], (entity, role) => {
-    if (role.type == null) return;
-    if (!(role.type in people)) people[role.type] = 0;
-    people[role.type] += 1;
-  });
+  // Helper function to create and display new labels
+  function createLabels() {
+    const texts = callback(); // Get updated texts from the callback
+    let currentY = y;
 
-  texts.forEach((textCallback, index) => {
-    // Create the label with dynamic content
-    const label = makeLabelJS(x, currentY, textCallback);
-    labels.push(label);
+    texts.forEach((text, index) => {
+      const label = makeLabelJS(x, currentY, text); // Create each label with dynamic text
+      labels.push(label); // Store the label for later
+      document.body.appendChild(label); // Append the label to the DOM
 
-    // Create "+" and "-" buttons
-    const plusButton = document.createElement("button");
-    plusButton.innerText = "+";
-    plusButton.style.position = "absolute";
-    plusButton.style.left = `${x + 100}px`; // Position right next to the label
-    plusButton.style.top = `${currentY}px`;
-    plusButton.style.fontSize = "8px";
-
-    const minusButton = document.createElement("button");
-    minusButton.innerText = "-";
-    minusButton.style.position = "absolute";
-    minusButton.style.left = `${x + 120}px`; // Position to the right of the "+" button
-    minusButton.style.top = `${currentY}px`;
-    minusButton.style.fontSize = "8px";
-
-    // Append buttons to the body
-    document.body.appendChild(plusButton);
-    document.body.appendChild(minusButton);
-
-    // Update the role counts when buttons are clicked
-    plusButton.addEventListener("click", () => {
-      const roleType = Object.keys(people)[index];
-      people[roleType] += 1;
-      labels[index].innerText = `${roleType}: ${people[roleType]}`; // Update label text
-    });
-
-    minusButton.addEventListener("click", () => {
-      const roleType = Object.keys(people)[index];
-      if (people[roleType] > 0) {
-        people[roleType] -= 1;
-        labels[index].innerText = `${roleType}: ${people[roleType]}`; // Update label text
+      // Add allocation buttons if provided in perItemOptions
+      if (perItemOptions && perItemOptions.hasAllocationButtons(index)) {
+        addAllocationButtons(
+          x,
+          currentY,
+          index,
+          perItemOptions.onPlusClicked,
+          perItemOptions.onMinusClicked
+        );
       }
+      currentY += 30; // Adjust the vertical position for the next label
     });
+  }
 
-    currentY += 30; // Adjust the vertical position for the next label
-  });
+  // Clear the old labels and create new ones
+  function updateLabels() {
+    clearExistingLabels(); // Remove all old labels
+    createLabels(); // Create new labels based on the callback
+  }
 
-  // Update the labels periodically with new values from the callback
-  setInterval(() => {
-    const updatedTexts = callback(); // Get updated texts from the callback
-    // Update each label with the new text
-    updatedTexts.forEach((newText, index) => {
-      labels[index].innerText = newText;
-    });
-  }, 1000);
+  // Initial label creation
+  updateLabels();
+
+  // Periodically clear old labels and create new ones based on the callback
+  setInterval(updateLabels, 1000);
 }
-
 function makeButtonJS({
   x,
   y,
@@ -314,9 +294,9 @@ function makeButtonJS({
   button.style.top = `${y}px`;
   button.style.width = `${width}px`;
   button.style.height = `${height}px`;
-  button.style.backgroundColor = "#f0f0f0";
   button.style.border = "1px solid #ccc";
   button.style.fontSize = "6px";
+  // TODO disable pointer when validation false
   button.style.cursor = "pointer";
 
   // Update the label text every second if label is a function
@@ -336,18 +316,25 @@ function makeButtonJS({
     event.stopPropagation();
     if (validationFunction) {
       const isValid = validationFunction(event);
-      if (!isValid) return;
+      if (!isValid) {
+        return;
+      }
     }
-    onClick(event);
+    const options = onClick(event);
+    if (options && options.shouldCleanup) {
+      button.remove();
+    }
   });
 
   // Handle hover start and end events
   button.addEventListener("mouseover", function () {
+    if (map_info.mouseMode != MouseMode.Normal) return;
     button.style.backgroundColor = "#ff00ff"; // change color on hover
     if (onHoverStart) onHoverStart(button);
   });
 
   button.addEventListener("mouseout", function () {
+    if (map_info.mouseMode != MouseMode.Normal) return;
     button.style.backgroundColor = "#f0f0f0"; // revert color on hover end
     if (onHoverEnd) onHoverEnd(button);
   });

@@ -81,3 +81,50 @@ function make_ship_speed_button(y_off = 0) {
     },
   });
 }
+
+function make_unlock_farmer_button(y_off = 0) {
+  makeButtonJS({
+    x: width - BUTTON_WIDTH - BUTTON_PADDING,
+    y: BUTTON_HEIGHT * y_off + BUTTON_PADDING,
+    w: BUTTON_WIDTH,
+    h: BUTTON_HEIGHT,
+    label: () => {
+      return "Unlock Farmer\n" + "(1 grunt, 20 berry)";
+    },
+    onClick: () => {
+      const grunts = find_all_with([CT.HasRole], (entity) => {
+        return entity.HasRole.type == RoleType.Grunt;
+      });
+      grunts[0].HasRole.type = RoleType.Farmer;
+      global_random_data.max_allocation[RoleType.Farmer] = 1;
+      global_random_data.role_allocation[RoleType.Farmer] = 1;
+
+      const berry_holders = find_all_with(
+        [CT.HoldsItem, CT.IsTarget],
+        (entity) => {
+          return entity.HoldsItem.type == ItemType.Berry;
+        }
+      );
+      let i = 20;
+      for (let berry_holder of berry_holders) {
+        i = i - berry_holder.HoldsItem.amount;
+        berry_holder.HoldsItem.amount = 0;
+        if (i <= 0) {
+          berry_holder.HoldsItem.amount += -i;
+          break;
+        }
+      }
+      return {
+        shouldCleanup: true,
+      };
+    },
+    onHoverStart: (_entity) => {},
+    onHoverEnd: (_entity) => {},
+    validationFunction: (_entity) => {
+      const people = audit_roles();
+      return (
+        amount_in_storage(ItemType.Berry) >= 20 && people[RoleType.Grunt] > 1
+      );
+    },
+  });
+}

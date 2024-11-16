@@ -29,6 +29,11 @@ let map_info = {
   onBuildingModeClick: () => {},
 };
 
+let global_random_data = {
+  role_allocation: {},
+  max_allocation: {},
+};
+
 function random_in_circle(x, y, radius) {
   let rad = (radius / 2) * Math.random();
   let angle = 2 * PI * Math.random();
@@ -60,13 +65,23 @@ function init_ui_overlay() {
   UI_OVERLAY.style.height = HEIGHT + "px";
 }
 
+function init_role_allocation() {
+  const roles = Object.values(RoleType);
+  for (let r of roles) {
+    global_random_data.role_allocation[r] = 0;
+    global_random_data.max_allocation[r] = 0;
+  }
+}
+
 function setup() {
   frameRate(60);
   let cnv = createCanvas(WIDTH, HEIGHT);
   cnv.mouseWheel(mouseScrolled);
   init_ui_overlay();
+  init_role_allocation();
 
   initial_berry_spawn();
+  make_ship(0, 0);
   make_ship(0, 0);
   make_drop(50, 50, 20, 20, ItemType.Berry);
 
@@ -84,23 +99,53 @@ function setup() {
     return texts;
   });
 
-  makeLabelListWithButtonsJS(10, height - 100, () => {
-    // calculate + render_roles
+  makeLabelListJS(
+    10,
+    height - 100,
+    () => {
+      // calculate + render_roles
+      const people = audit_roles();
 
-    let people = {};
-    for_components([CT.HasRole], (entity, role) => {
-      if (role.type == null) return;
-      if (!(role.type in people)) people[role.type] = 0;
-      people[role.type] += 1;
-    });
-    let texts = [];
-    for (let k of Object.keys(people)) {
-      texts.push("" + k + ": " + people[k]);
+      let texts = [];
+      for (let k of Object.keys(people)) {
+        if (k == RoleType.Grunt) {
+          texts.push("" + k + ": " + people[k]);
+          continue;
+        }
+        //
+        let cur_alloc = global_random_data.role_allocation[k] ?? people[k];
+        let max_role = global_random_data.max_allocation[k] ?? people[k];
+        if (max_role <= 0) max_role = people[k];
+
+        texts.push(
+          "" + k + ": " + cur_alloc + "/" + max_role + "(" + people[k] + ")"
+        );
+      }
+      return texts;
+    },
+    {
+      hasAllocationButtons: (index) => {
+        const people = audit_roles();
+        const role = Object.keys(people)[index];
+        return role != RoleType.Grunt;
+      },
+      onPlusClicked: (index) => {
+        const people = audit_roles();
+        const role = Object.keys(people)[index];
+        const val = global_random_data.role_allocation[role];
+        global_random_data.role_allocation[role] = val + 1;
+        console.log(role, global_random_data.role_allocation);
+      },
+      onMinusClicked: (index) => {
+        const people = audit_roles();
+        const role = Object.keys(people)[index];
+        global_random_data.role_allocation[role]--;
+      },
     }
-    return texts;
-  });
+  );
 
   make_berry_bush_button();
+  make_unlock_farmer_button(1);
 }
 
 function on_second_tick() {}

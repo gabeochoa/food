@@ -111,6 +111,16 @@ function audit_storage() {
   return holders;
 }
 
+function audit_roles() {
+  let people = {};
+  for_components([CT.HasRole], (entity, role) => {
+    if (role.type == null) return;
+    if (!(role.type in people)) people[role.type] = 0;
+    people[role.type] += 1;
+  });
+  return people;
+}
+
 function count_entities_with(cmp) {
   let ids = to_ents(find_matching_ids([cmp]));
   return ids.length;
