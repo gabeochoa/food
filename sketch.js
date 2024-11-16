@@ -43,7 +43,8 @@ function random_in_circle(x, y, radius) {
 function initial_berry_spawn() {
   i = 0;
   spawn_radius = 300;
-  while (i < 25) {
+  // TODO 20
+  while (i < 205) {
     let rad = (spawn_radius / 2) * Math.random();
     let angle = 2 * PI * Math.random();
     make_item(
