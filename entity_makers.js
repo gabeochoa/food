@@ -170,3 +170,67 @@ function make_label_list(x, y, callback) {
 
   entities[e.id] = e;
 }
+
+function makeButtonJS({
+  x,
+  y,
+  width,
+  height,
+  label,
+  onClick,
+  onHoverStart,
+  onHoverEnd,
+  validationFunction,
+} = {}) {
+  // Create the button element
+  const button = document.createElement("button");
+
+  // Set button styles
+  button.style.position = "absolute";
+  button.style.left = `${x}px`;
+  button.style.top = `${y}px`;
+  button.style.width = `${width}px`;
+  button.style.height = `${height}px`;
+  button.style.backgroundColor = "#f0f0f0";
+  button.style.border = "1px solid #ccc";
+  button.style.fontSize = "6px";
+  button.style.cursor = "pointer";
+
+  // Update the label text every second if label is a function
+  if (typeof label === "function") {
+    setInterval(() => {
+      button.innerText = label();
+    }, 1000); // update label every second
+  } else {
+    // If label is not a function, set it once
+    button.innerText = label;
+  }
+
+  // Handle click event with validation
+  button.addEventListener("click", function (event) {
+    if (map_info.mouseMode != MouseMode.Normal) return;
+
+    event.stopPropagation();
+    if (validationFunction) {
+      const isValid = validationFunction(event);
+      if (!isValid) return;
+    }
+    onClick(event);
+  });
+
+  // Handle hover start and end events
+  button.addEventListener("mouseover", function () {
+    button.style.backgroundColor = "#ff00ff"; // change color on hover
+    if (onHoverStart) onHoverStart(button);
+  });
+
+  button.addEventListener("mouseout", function () {
+    button.style.backgroundColor = "#f0f0f0"; // revert color on hover end
+    if (onHoverEnd) onHoverEnd(button);
+  });
+
+  // Append the button to the body or a parent container
+  UI_OVERLAY.appendChild(button);
+
+  return button;
+}

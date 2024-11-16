@@ -50,10 +50,21 @@ function initial_berry_spawn() {
   }
 }
 
+const WIDTH = 400;
+const HEIGHT = 300;
+let UI_OVERLAY = null;
+
+function init_ui_overlay() {
+  UI_OVERLAY = document.getElementById("ui");
+  UI_OVERLAY.style.width = WIDTH + "px";
+  UI_OVERLAY.style.height = HEIGHT + "px";
+}
+
 function setup() {
   frameRate(60);
-  let cnv = createCanvas(400, 300);
+  let cnv = createCanvas(WIDTH, HEIGHT);
   cnv.mouseWheel(mouseScrolled);
+  init_ui_overlay();
 
   initial_berry_spawn();
   make_ship(0, 0);
@@ -69,6 +80,22 @@ function setup() {
     let texts = [];
     for (let k of Object.keys(holders)) {
       texts.push("" + k + ": " + holders[k]);
+    }
+    return texts.join("\n");
+  });
+
+  make_label_list(10, height - 100, () => {
+    // calculate + render_roles
+
+    let people = {};
+    for_components([CT.HasRole], (entity, role) => {
+      if (role.type == null) return;
+      if (!(role.type in people)) people[role.type] = 0;
+      people[role.type] += 1;
+    });
+    let texts = [];
+    for (let k of Object.keys(people)) {
+      texts.push("" + k + ": " + people[k]);
     }
     return texts.join("\n");
   });
@@ -241,11 +268,6 @@ function mouseDragged(event) {
 
 function mouseClicked(event) {
   if (map_info.mouseMode == MouseMode.Normal) {
-    for_components([CT.HasClickInteraction], (entity, interaction) => {
-      if (mouseInsideRect(entity.pos, entity.RectRenderer)) {
-        interaction.callback(entity);
-      }
-    });
     return;
   }
   if (map_info.mouseMode == MouseMode.Build) {

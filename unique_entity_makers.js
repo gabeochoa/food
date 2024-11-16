@@ -5,7 +5,7 @@ const BUTTON_HEIGHT = 20;
 const BUTTON_PADDING = 10;
 
 function make_berry_bush_button(y_off = 0) {
-  make_dynamic_button({
+  makeButtonJS({
     x: width - BUTTON_WIDTH - BUTTON_PADDING,
     y: BUTTON_HEIGHT * y_off + BUTTON_PADDING,
     w: BUTTON_WIDTH,
