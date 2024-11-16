@@ -35,6 +35,18 @@ function make_farmer(x, y) {
   entities[e.id] = e;
 }
 
+function make_home_builder(x, y) {
+  e = new Entity(x, y, [
+    ...get_base_ship_components(),
+    CT.HasTarget,
+    CT.CanBuild,
+  ]);
+  e.HasRole.type = RoleType.Builder;
+  e.CanBuild.cooldown = to_60fps(5000);
+  e.CanBuild.cooldown_reset = to_60fps(5000);
+  entities[e.id] = e;
+}
+
 function make_preview_entity(x, y, w, h) {
   e = new Entity(x, y, [CT.IsTemporary, CT.RectRenderer]);
   e.RectRenderer.w = w;

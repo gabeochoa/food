@@ -23,6 +23,7 @@ const MouseMode = {
 const BuildingType = {
   None: "none",
   Bush: "bush",
+  Home: "home",
 };
 
 let map_info = {
@@ -165,6 +166,7 @@ function setup() {
 
   make_berry_bush_button();
   make_unlock_farmer_button(1);
+  make_unlock_home_builder_button(2);
 }
 
 function on_second_tick() {}
@@ -194,12 +196,29 @@ function tick() {
   // // // // // // // //
 
   for_components([CT.HasRole, CT.CanBuild], (entity, role, canBuild) => {
-    if (role.type != RoleType.Farmer) return;
-    if (canBuild.building_type != BuildingType.None) return;
-    if (amount_in_storage(ItemType.Berry) < 10) return;
-    canBuild.building_type = BuildingType.Bush;
-    spend_amount(ItemType.Berry, 10);
-    console.log("farmer ", entity.id, "gonna build soon :) ");
+    switch (role.type) {
+      case RoleType.Builder:
+        {
+          if (canBuild.building_type != BuildingType.None) return;
+          if (amount_in_storage(ItemType.Berry) < 100) return;
+          canBuild.building_type = BuildingType.Home;
+          spend_amount(ItemType.Berry, 100);
+          console.log("builder", entity.id, "gonna build soon :) ");
+        }
+        return;
+      case RoleType.Farmer:
+        {
+          if (canBuild.building_type != BuildingType.None) return;
+          if (amount_in_storage(ItemType.Berry) < 10) return;
+          canBuild.building_type = BuildingType.Bush;
+          spend_amount(ItemType.Berry, 10);
+          console.log("farmer ", entity.id, "gonna build soon :) ");
+        }
+        return;
+      case RoleType.Grunt:
+      default:
+        return;
+    }
   });
 
   for_components(
@@ -210,6 +229,50 @@ function tick() {
       //
 
       switch (role.type) {
+        case RoleType.Builder:
+          {
+            let match = find_closest_with_all(
+              [CT.IsSpawner],
+              entity.pos,
+              (e) => {
+                return (e.IsSpawner.type = ItemType._Grunt);
+              }
+            );
+            let t_x = 0;
+            let t_y = 0;
+
+            if (match == null) {
+              [t_x, t_y] = random_in_circle(
+                entity.pos.x,
+                entity.pos.y,
+                200,
+                100
+              );
+            } else {
+              [t_x, t_y] = random_in_circle(match.pos.x, match.pos.y, 200, 10);
+            }
+
+            ht.target_id = make_target_location(t_x, t_y).id;
+            ht.onReached = () => {
+              cb.cooldown--;
+              if (cb.cooldown > 0) return false;
+              cb.cooldown = cb.cooldown_reset;
+
+              make_spawner(
+                t_x,
+                t_y,
+                15,
+                15,
+                (x, y) => {
+                  // ItemType._Grunt,
+                  make_ship(x, y);
+                },
+                1, // amount
+                1 // radi
+              );
+            };
+          }
+          return;
         case RoleType.Farmer:
           {
             let match = find_closest_with_all(

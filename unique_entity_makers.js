@@ -104,3 +104,41 @@ function make_unlock_farmer_button(y_off = 0) {
     },
   });
 }
+
+function make_unlock_home_builder_button(y_off = 0) {
+  makeButtonJS({
+    x: width - BUTTON_WIDTH - BUTTON_PADDING,
+    y: BUTTON_HEIGHT * y_off + BUTTON_PADDING,
+    w: BUTTON_WIDTH,
+    h: BUTTON_HEIGHT,
+    label: () => {
+      return "Unlock Home\n" + "(1 grunt, 100 berry)";
+    },
+    onClick: () => {
+      const grunts = find_all_with([CT.HasRole], (entity) => {
+        return entity.HasRole.type == RoleType.Grunt;
+      });
+
+      const grunt = grunts[0];
+      make_home_builder(grunt.pos.x, grunt.pos.y);
+      remove_entity(grunt.id);
+
+      global_random_data.max_allocation[RoleType.Builder] = 1;
+      global_random_data.role_allocation[RoleType.Builder] = 1;
+
+      spend_amount(ItemType.Berry, 100);
+
+      return {
+        shouldCleanup: true,
+      };
+    },
+    onHoverStart: (_entity) => {},
+    onHoverEnd: (_entity) => {},
+    validationFunction: (_entity) => {
+      const people = audit_roles();
+      return (
+        amount_in_storage(ItemType.Berry) >= 100 && people[RoleType.Grunt] > 1
+      );
+    },
+  });
+}
