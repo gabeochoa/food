@@ -70,21 +70,22 @@ function setup() {
   make_ship(0, 0);
   make_drop(50, 50, 20, 20, ItemType.Berry);
 
-  make_label(10, 10, () => {
+  makeLabelJS(10, 10, () => {
     return "num ents " + Object.keys(entities).length;
   });
 
-  make_label_list(10, 20, () => {
+  makeLabelListJS(10, 20, () => {
     // calculate + render_holders
     let holders = audit_storage();
     let texts = [];
     for (let k of Object.keys(holders)) {
       texts.push("" + k + ": " + holders[k]);
     }
-    return texts.join("\n");
+    texts.push(new Date().toLocaleTimeString());
+    return texts;
   });
 
-  make_label_list(10, height - 100, () => {
+  makeLabelListJS(10, height - 100, () => {
     // calculate + render_roles
 
     let people = {};
@@ -97,7 +98,7 @@ function setup() {
     for (let k of Object.keys(people)) {
       texts.push("" + k + ": " + people[k]);
     }
-    return texts.join("\n");
+    return texts;
   });
 
   make_berry_bush_button();
@@ -219,7 +220,6 @@ function tick() {
   });
 
   for_components([CT.IsSpawner], (entity, iss) => {
-    console.log(iss);
     iss.timer -= 1;
     if (iss.timer > 0) return;
     iss.timer = iss.timer_reset;

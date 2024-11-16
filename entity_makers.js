@@ -171,6 +171,59 @@ function make_label_list(x, y, callback) {
   entities[e.id] = e;
 }
 
+function makeLabelJS(x, y, label_content) {
+  // Create a label (div element)
+  const label = document.createElement("div");
+
+  // Set the position and styles
+  label.style.position = "absolute";
+  label.style.left = `${x}px`;
+  label.style.top = `${y}px`;
+  label.style.fontSize = "8px";
+  label.style.color = "#FFF";
+  label.style.textAlign = "center";
+
+  // Set the text from the callback function
+  if (typeof label_content === "function") {
+    setInterval(() => {
+      label.innerText = label_content();
+    }, 1000); // update label every second
+  } else {
+    // If label is not a function, set it once
+    label.innerText = label_content;
+  }
+
+  // Append the label to the body or any container you like
+  document.body.appendChild(label);
+
+  return label;
+}
+
+function makeLabelListJS(x, y, callback) {
+  // Store references to all created labels in an array
+  const labels = [];
+
+  // Create the initial labels and add them to the DOM
+  const texts = callback(); // Get initial texts from the callback
+  let currentY = y;
+
+  texts.forEach((textCallback) => {
+    const label = makeLabelJS(x, currentY, textCallback); // Create each label with dynamic text
+    labels.push(label); // Store the label for later updates
+    document.body.appendChild(label);
+    currentY += 30; // Adjust the vertical position for the next label
+  });
+
+  // Update the labels periodically with new values from the callback
+  setInterval(() => {
+    const updatedTexts = callback(); // Get updated texts from the callback
+    // Update each label with the new text
+    updatedTexts.forEach((newText, index) => {
+      labels[index].innerText = newText;
+    });
+  }, 1000);
+}
+
 function makeButtonJS({
   x,
   y,
