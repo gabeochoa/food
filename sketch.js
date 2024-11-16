@@ -267,17 +267,18 @@ function mouseClicked(event) {
 }
 
 function arrowKeymapMovement() {
+  const map_speed = keyIsDown(SHIFT) ? 5 : 1;
   if (keyIsDown(LEFT_ARROW)) {
-    map_info["center"][0] += 1;
+    map_info["center"][0] += map_speed;
   }
   if (keyIsDown(RIGHT_ARROW)) {
-    map_info["center"][0] -= 1;
+    map_info["center"][0] -= map_speed;
   }
   if (keyIsDown(DOWN_ARROW)) {
-    map_info["center"][1] -= 1;
+    map_info["center"][1] -= map_speed;
   }
   if (keyIsDown(UP_ARROW)) {
-    map_info["center"][1] += 1;
+    map_info["center"][1] += map_speed;
   }
 }
 
