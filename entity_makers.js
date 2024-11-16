@@ -4,14 +4,21 @@ function make_item(x, y, type) {
   entities[e.id] = e;
 }
 
+function get_base_ship_components() {
+  return [CT.HasVelocity, CT.SquareRenderer, CT.HasRole];
+}
+
 function make_ship(x, y) {
   e = new Entity(x, y, [
-    CT.HasVelocity,
-    CT.SquareRenderer,
+    ...get_base_ship_components(),
     CT.HasTarget,
     CT.HoldsItem,
-    CT.HasRole,
   ]);
+  entities[e.id] = e;
+}
+
+function make_farmer(x, y) {
+  e = new Entity(x, y, [...get_base_ship_components()]);
   entities[e.id] = e;
 }
 
