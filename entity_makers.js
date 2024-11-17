@@ -5,7 +5,23 @@ function make_item(x, y, type) {
 }
 
 function get_base_ship_components() {
-  return [CT.HasVelocity, CT.SquareRenderer, CT.HasRole];
+  return [CT.HasVelocity, CT.SquareRenderer, CT.HasRole, CT.HasCustomColor];
+}
+
+function set_color_for_role(entity) {
+  if (has_(entity.id, CT.HasRole)) {
+    switch (entity.HasRole.type) {
+      case RoleType.Builder:
+        return color(150, 150, 255, 255);
+      case RoleType.Farmer:
+        return color(150, 255, 150, 255);
+      case RoleType.Grunt:
+        return color(150, 150, 150, 255);
+      default:
+        return color(150, 150, 150, 255);
+    }
+  }
+  return color(255, 255, 255, 255);
 }
 
 function make_target_location(x, y) {
@@ -20,6 +36,7 @@ function make_ship(x, y) {
     CT.HasTarget,
     CT.HoldsItem,
   ]);
+  e.HasCustomColor.get_color = set_color_for_role;
   entities[e.id] = e;
 }
 
@@ -32,6 +49,7 @@ function make_farmer(x, y) {
   e.HasRole.type = RoleType.Farmer;
   e.CanBuild.cooldown = to_60fps(5000);
   e.CanBuild.cooldown_reset = to_60fps(5000);
+  e.HasCustomColor.get_color = set_color_for_role;
   entities[e.id] = e;
 }
 
@@ -44,13 +62,20 @@ function make_home_builder(x, y) {
   e.HasRole.type = RoleType.Builder;
   e.CanBuild.cooldown = to_60fps(5000);
   e.CanBuild.cooldown_reset = to_60fps(5000);
+  e.HasCustomColor.get_color = set_color_for_role;
   entities[e.id] = e;
 }
 
 function make_preview_entity(x, y, w, h) {
-  e = new Entity(x, y, [CT.IsTemporary, CT.RectRenderer]);
+  e = new Entity(x, y, [CT.IsTemporary, CT.RectRenderer, CT.HasCustomColor]);
   e.RectRenderer.w = w;
   e.RectRenderer.h = h;
+
+  e.HasCustomColor.get_color = (e) => {
+    // at some point we need to grab the underlying color..
+    return color(255, 255, 255, 150);
+  };
+
   entities[e.id] = e;
 }
 
@@ -144,6 +169,7 @@ function make_button({
     CT.HasHoverInteraction,
     CT.HasLabel,
     CT.HasAbsolutePosition,
+    CT.HasCustomColor,
   ]);
   e.RectRenderer.w = w;
   e.RectRenderer.h = h;
@@ -160,13 +186,26 @@ function make_button({
     }
     onClick();
   };
-  e.HasHoverInteraction.onStart = (entity) => {
-    entity.RectRenderer.color = color(255, 0, 255, 255);
-    onHoverStart(entity);
-  };
-  e.HasHoverInteraction.onEnd = (entity) => {
-    entity.RectRenderer.color = color(255);
-    onHoverEnd(entity);
+  e.HasHoverInteraction.onStart = onHoverStart;
+  e.HasHoverInteraction.onEnd = onHoverEnd;
+
+  e.HasCustomColor.get_color = (e) => {
+    if (
+      has_(entity.id, CT.HasHoverInteraction) &&
+      entity.HasHoverInteraction.active
+    ) {
+      return color(255, 0, 255, 255);
+    }
+
+    if (
+      has_(entity.id, CT.HasClickInteraction) &&
+      entity.HasClickInteraction.validator
+    ) {
+      if (!entity.HasClickInteraction.validator(entity)) {
+        return color(100, 100, 100, 255);
+      }
+      return color(255, 255, 255, 255);
+    }
   };
   entities[e.id] = e;
   return e;

@@ -10,7 +10,12 @@ const CT = {
     fields: {
       w: "Number",
       h: "Number",
-      color: "Color",
+    },
+  },
+  HasCustomColor: {
+    name: "HasCustomColor",
+    fields: {
+      get_color: "Function",
     },
   },
   HasVelocity: {
@@ -129,6 +134,7 @@ const EC = {
   HasHoverInteraction: [],
   HasLabel: [],
   HasAbsolutePosition: [],
+  HasCustomColor: [],
 };
 
 const RoleType = {
