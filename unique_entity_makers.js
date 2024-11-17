@@ -27,16 +27,7 @@ function make_berry_bush_button(y_off = 0) {
         make_preview_entity(mx, my, 15, 15);
       };
       map_info.onBuildingModeClick = (mx, my) => {
-        //BuildingType.Bush;
-        make_spawner(
-          mx,
-          my,
-          15,
-          15,
-          ItemType.Berry,
-          10, // amount
-          50 // radi
-        );
+        spawn_bush(mx, my);
         spend_amount(ItemType.Berry, SPAWN_ORE_COST);
       };
     },

@@ -89,6 +89,12 @@ function make_spawner(x, y, w, h, onSpawn, amount, radius) {
   e.RectRenderer.w = w;
   e.RectRenderer.h = h;
 
+  if (typeof onSpawn !== "function") {
+    console.error(
+      "Trying to make a spawner but not passing in a function ",
+      onSpawn
+    );
+  }
   e.IsSpawner.onSpawn = onSpawn;
   e.IsSpawner.amount = amount;
   e.IsSpawner.radius = radius;
