@@ -376,6 +376,7 @@ function makeLabelListJS(x, y, callback, perItemOptions = null) {
   setInterval(updateLabels, 1000);
 }
 function makeButtonJS({
+  name,
   x,
   y,
   width,
@@ -389,6 +390,7 @@ function makeButtonJS({
   // Create the button element
   const button = document.createElement("button");
 
+  button.setAttribute("id", name);
   // Set button styles
   button.style.position = "absolute";
   button.style.left = `${x}px`;

@@ -6,6 +6,7 @@ const BUTTON_PADDING = 10;
 
 function make_berry_bush_button(y_off = 0) {
   makeButtonJS({
+    name: "plant_bush",
     x: width - BUTTON_WIDTH - BUTTON_PADDING,
     y: BUTTON_HEIGHT * y_off + BUTTON_PADDING,
     w: BUTTON_WIDTH,
@@ -49,6 +50,7 @@ function make_berry_bush_button(y_off = 0) {
 
 function make_house_button(y_off = 0) {
   makeButtonJS({
+    name: "build_house",
     x: width - BUTTON_WIDTH - BUTTON_PADDING,
     y: BUTTON_HEIGHT * y_off + BUTTON_PADDING,
     w: BUTTON_WIDTH,
@@ -96,6 +98,7 @@ function make_ship_speed_button(y_off = 0) {
 
 function make_unlock_farmer_button(y_off = 0) {
   makeButtonJS({
+    name: "unlock_farmer",
     x: width - BUTTON_WIDTH - BUTTON_PADDING,
     y: BUTTON_HEIGHT * y_off + BUTTON_PADDING,
     w: BUTTON_WIDTH,
@@ -116,6 +119,7 @@ function make_unlock_farmer_button(y_off = 0) {
       global_random_data.role_allocation[RoleType.Farmer] = 1;
 
       spend_amount(ItemType.Berry, 20);
+      document.getElementById("plant_bush").remove();
 
       return {
         shouldCleanup: true,
@@ -134,6 +138,7 @@ function make_unlock_farmer_button(y_off = 0) {
 
 function make_unlock_home_builder_button(y_off = 0) {
   makeButtonJS({
+    name: "unlock_builder",
     x: width - BUTTON_WIDTH - BUTTON_PADDING,
     y: BUTTON_HEIGHT * y_off + BUTTON_PADDING,
     w: BUTTON_WIDTH,
@@ -154,6 +159,8 @@ function make_unlock_home_builder_button(y_off = 0) {
       global_random_data.role_allocation[RoleType.Builder] = 1;
 
       spend_amount(ItemType.Berry, 100);
+
+      document.getElementById("build_house").remove();
 
       return {
         shouldCleanup: true,
