@@ -178,6 +178,21 @@ function render_squares() {
       scale(1 / map_info.zoomLevel);
     }
     fill(255, 255, 255, 255);
+    if (has_(entity.id, CT.HasRole)) {
+      switch (entity.HasRole.type) {
+        case RoleType.Builder:
+          fill(150, 150, 255, 255);
+          break;
+        case RoleType.Farmer:
+          fill(150, 255, 150, 255);
+          break;
+        case RoleType.Grunt:
+          fill(150, 150, 150, 255);
+          break;
+        default:
+          break;
+      }
+    }
     translate(entity.pos.x, entity.pos.y);
     rect(0, 0, PSIZE, PSIZE);
     pop();
