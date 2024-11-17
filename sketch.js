@@ -164,9 +164,11 @@ function setup() {
     }
   );
 
-  make_berry_bush_button();
-  make_unlock_farmer_button(1);
-  make_unlock_home_builder_button(2);
+  let btn_idx = 0;
+  make_berry_bush_button(btn_idx++);
+  make_house_button(btn_idx++);
+  make_unlock_farmer_button(btn_idx++);
+  make_unlock_home_builder_button(btn_idx++);
 }
 
 function on_second_tick() {}
@@ -267,7 +269,7 @@ function tick() {
                   // ItemType._Grunt,
                   make_ship(x, y);
                 },
-                1, // amount
+                3, // amount
                 1 // radi
               );
             };

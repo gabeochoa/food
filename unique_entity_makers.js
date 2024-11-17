@@ -47,6 +47,44 @@ function make_berry_bush_button(y_off = 0) {
   });
 }
 
+function make_house_button(y_off = 0) {
+  makeButtonJS({
+    x: width - BUTTON_WIDTH - BUTTON_PADDING,
+    y: BUTTON_HEIGHT * y_off + BUTTON_PADDING,
+    w: BUTTON_WIDTH,
+    h: BUTTON_HEIGHT,
+    label: () => {
+      return "Build House\n" + "( 3 grunts for 50 berry)";
+    },
+    onClick: () => {
+      map_info.mouseMode = MouseMode.Build;
+      map_info.onBuildingModePreview = (mx, my) => {
+        make_preview_entity(mx, my, 15, 15);
+      };
+      map_info.onBuildingModeClick = (mx, my) => {
+        //BuildingType.Bush;
+        make_spawner(
+          mx,
+          my,
+          15,
+          15,
+          (x, y) => {
+            make_ship(x, y);
+          },
+          3, // amount
+          1 // radi
+        );
+        spend_amount(ItemType.Berry, 50);
+      };
+    },
+    onHoverStart: (_entity) => {},
+    onHoverEnd: (_entity) => {},
+    validationFunction: (_entity) => {
+      return amount_in_storage(ItemType.Berry) >= SPAWN_ORE_COST;
+    },
+  });
+}
+
 function make_ship_speed_button(y_off = 0) {
   make_button({
     x: width - BUTTON_WIDTH - BUTTON_PADDING,
