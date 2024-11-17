@@ -39,18 +39,6 @@ let global_random_data = {
   max_allocation: {},
 };
 
-function random_in_circle(x, y, radius, minRadius = 0) {
-  if (minRadius > radius) {
-    throw new Error("minRadius cannot be greater than radius.");
-  }
-  let rad = minRadius + Math.random() * (radius - minRadius);
-  let angle = 2 * Math.PI * Math.random();
-  return [
-    x + Math.floor(Math.cos(angle) * rad),
-    y + Math.floor(Math.sin(angle) * rad),
-  ];
-}
-
 function initial_berry_spawn() {
   i = 0;
   spawn_radius = 300;
@@ -427,25 +415,5 @@ function draw() {
   arrowKeymapMovement();
   //
 
-  push();
-  {
-    translate(map_info.center[0], map_info.center[1]);
-    scale(map_info.zoomLevel);
-    background(0);
-    render_circles();
-    render_squares();
-    render_rect();
-    render_labels();
-
-    //
-    push();
-    {
-      stroke(255);
-      strokeWeight(2 / map_info.zoomLevel);
-      noFill();
-      circle(width / 2, height / 2, spawn_radius);
-    }
-    pop();
-  }
-  pop();
+  render_all();
 }

@@ -33,3 +33,15 @@ function inverseColor(r, g, b) {
   b = 255 - b;
   return [r, g, b];
 }
+
+function random_in_circle(x, y, radius, minRadius = 0) {
+  if (minRadius > radius) {
+    throw new Error("minRadius cannot be greater than radius.");
+  }
+  let rad = minRadius + Math.random() * (radius - minRadius);
+  let angle = 2 * Math.PI * Math.random();
+  return [
+    x + Math.floor(Math.cos(angle) * rad),
+    y + Math.floor(Math.sin(angle) * rad),
+  ];
+}

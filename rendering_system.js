@@ -1,5 +1,29 @@
 // Renderer system
 
+function render_all() {
+  push();
+  {
+    translate(map_info.center[0], map_info.center[1]);
+    scale(map_info.zoomLevel);
+    background(0);
+    render_circles();
+    render_squares();
+    render_rect();
+    render_labels();
+
+    //
+    push();
+    {
+      stroke(255);
+      strokeWeight(2 / map_info.zoomLevel);
+      noFill();
+      circle(width / 2, height / 2, spawn_radius);
+    }
+    pop();
+  }
+  pop();
+}
+
 function render_circles() {
   for_components([CT.CircleRenderer], (entity) => {
     push();
