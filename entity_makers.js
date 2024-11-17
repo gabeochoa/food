@@ -203,6 +203,36 @@ function make_label_list(x, y, callback) {
   entities[e.id] = e;
 }
 
+function spawn_grunt(x, y) {
+  make_ship(x, y);
+}
+
+function spawn_bush(x, y) {
+  make_spawner(
+    x,
+    y,
+    15,
+    15,
+    (x, y) => {
+      make_item(x, y, ItemType.Berry);
+    },
+    10, // amount
+    50 // radi
+  );
+}
+
+function spawn_house(x, y) {
+  make_spawner(
+    x,
+    y,
+    15,
+    15,
+    spawn_grunt,
+    3, // amount
+    1 // radi
+  );
+}
+
 function makeLabelJS(x, y, label_content) {
   // Create a label (div element)
   const label = document.createElement("div");

@@ -62,18 +62,7 @@ function make_house_button(y_off = 0) {
         make_preview_entity(mx, my, 15, 15);
       };
       map_info.onBuildingModeClick = (mx, my) => {
-        //BuildingType.Bush;
-        make_spawner(
-          mx,
-          my,
-          15,
-          15,
-          (x, y) => {
-            make_ship(x, y);
-          },
-          3, // amount
-          1 // radi
-        );
+        spawn_house(mx, my);
         spend_amount(ItemType.Berry, 50);
       };
     },

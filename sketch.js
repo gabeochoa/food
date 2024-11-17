@@ -202,9 +202,9 @@ function tick() {
       case RoleType.Builder:
         {
           if (canBuild.building_type != BuildingType.None) return;
-          if (amount_in_storage(ItemType.Berry) < 100) return;
+          if (amount_in_storage(ItemType.Berry) < 50) return;
           canBuild.building_type = BuildingType.Home;
-          spend_amount(ItemType.Berry, 100);
+          spend_amount(ItemType.Berry, 50);
           console.log("builder", entity.id, "gonna build soon :) ");
         }
         return;
@@ -260,18 +260,7 @@ function tick() {
               if (cb.cooldown > 0) return false;
               cb.cooldown = cb.cooldown_reset;
 
-              make_spawner(
-                t_x,
-                t_y,
-                15,
-                15,
-                (x, y) => {
-                  // ItemType._Grunt,
-                  make_ship(x, y);
-                },
-                3, // amount
-                1 // radi
-              );
+              spawn_house(t_x, t_y);
             };
           }
           return;
@@ -306,17 +295,7 @@ function tick() {
               remove_entity(ht.target_id);
 
               // console.log("completed planting ");
-              make_spawner(
-                t_x,
-                t_y,
-                15,
-                15,
-                (x, y) => {
-                  make_item(x, y, ItemType.Berry);
-                },
-                10, // amount
-                50 // radi
-              );
+              spawn_bush(t_x, t_y);
               return true;
             };
           }
