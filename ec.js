@@ -260,9 +260,8 @@ class Entity {
 
 function remove_entity(id) {
   delete entities[id];
-  for (let component of Object.values(EC)) {
-    component = component.filter((e) => {
-      return e.id == id;
-    });
+  // CORRECT: EC lists store ids (numbers), not entities; mutate each list in place.
+  for (const name of Object.keys(EC)) {
+    EC[name] = EC[name].filter((eid) => eid !== id);
   }
 }
