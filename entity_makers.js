@@ -1,5 +1,5 @@
 function make_item(x, y, type) {
-  e = new Entity(x, y, [CT.CircleRenderer, CT.IsItem, CT.IsTarget]);
+  const e = new Entity(x, y, [CT.CircleRenderer, CT.IsItem, CT.IsTarget]);
   e.IsItem.type = type;
   entities[e.id] = e;
 }
@@ -25,13 +25,13 @@ function set_color_for_role(entity) {
 }
 
 function make_target_location(x, y) {
-  e = new Entity(x, y, [CT.IsTarget]);
+  const e = new Entity(x, y, [CT.IsTarget]);
   entities[e.id] = e;
   return e;
 }
 
 function make_ship(x, y) {
-  e = new Entity(x, y, [
+  const e = new Entity(x, y, [
     ...get_base_ship_components(),
     CT.HasTarget,
     CT.HoldsItem,
@@ -41,7 +41,7 @@ function make_ship(x, y) {
 }
 
 function make_farmer(x, y) {
-  e = new Entity(x, y, [
+  const e = new Entity(x, y, [
     ...get_base_ship_components(),
     CT.HasTarget,
     CT.CanBuild,
@@ -54,7 +54,7 @@ function make_farmer(x, y) {
 }
 
 function make_home_builder(x, y) {
-  e = new Entity(x, y, [
+  const e = new Entity(x, y, [
     ...get_base_ship_components(),
     CT.HasTarget,
     CT.CanBuild,
@@ -67,7 +67,7 @@ function make_home_builder(x, y) {
 }
 
 function make_preview_entity(x, y, w, h) {
-  e = new Entity(x, y, [CT.IsTemporary, CT.RectRenderer, CT.HasCustomColor]);
+  const e = new Entity(x, y, [CT.IsTemporary, CT.RectRenderer, CT.HasCustomColor]);
   e.RectRenderer.w = w;
   e.RectRenderer.h = h;
 
@@ -80,7 +80,7 @@ function make_preview_entity(x, y, w, h) {
 }
 
 function make_spawner(x, y, w, h, onSpawn, amount, radius) {
-  e = new Entity(x, y, [
+  const e = new Entity(x, y, [
     CT.RectRenderer,
     CT.HasHoverInteraction,
     CT.HasLabel,
@@ -134,7 +134,7 @@ function make_spawner(x, y, w, h, onSpawn, amount, radius) {
 }
 
 function make_drop(x, y, w, h, itemType) {
-  e = new Entity(x, y, [
+  const e = new Entity(x, y, [
     CT.RectRenderer,
     CT.HoldsItem,
     CT.IsDropoff,
@@ -169,7 +169,7 @@ function make_button({
   onHoverEnd,
   validationFunction,
 } = {}) {
-  e = new Entity(x, y, [
+  const e = new Entity(x, y, [
     CT.RectRenderer,
     CT.HasClickInteraction,
     CT.HasHoverInteraction,
@@ -227,7 +227,7 @@ function make_dynamic_button(buttonOptions) {
 }
 
 function make_label(x, y, callback) {
-  e = new Entity(x, y, [CT.HasLabel, CT.HasAbsolutePosition]);
+  const e = new Entity(x, y, [CT.HasLabel, CT.HasAbsolutePosition]);
   e.HasLabel.is_dynamic = true;
   e.HasLabel.active = true;
   e.HasLabel.location = RectLocation.Center;
@@ -238,7 +238,7 @@ function make_label(x, y, callback) {
 }
 
 function make_label_list(x, y, callback) {
-  e = new Entity(x, y, [CT.HasLabel, CT.HasAbsolutePosition]);
+  const e = new Entity(x, y, [CT.HasLabel, CT.HasAbsolutePosition]);
   e.HasLabel.is_dynamic = true;
   e.HasLabel.active = true;
   e.HasLabel.location = RectLocation.Center;

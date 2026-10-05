@@ -40,7 +40,7 @@ let global_random_data = {
 };
 
 function initial_berry_spawn() {
-  i = 0;
+  let i = 0;
   spawn_radius = 300;
   // TODO 20
   while (i < 205) {
@@ -360,7 +360,7 @@ function tick() {
   // move to target if one exists
   for_components([CT.HasTarget], (entity, ht) => {
     if (ht.target_id == null) return;
-    target = entities[ht.target_id];
+    const target = entities[ht.target_id];
     if (target == null) {
       ht.target_id = null;
       return;
@@ -374,7 +374,7 @@ function tick() {
   // drop off object
   for_components([CT.HasTarget], (entity, ht) => {
     if (ht.target_id == null) return;
-    target = entities[ht.target_id];
+    const target = entities[ht.target_id];
     if (target == null) {
       ht.target_id = null;
       return;

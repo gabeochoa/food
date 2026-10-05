@@ -18,7 +18,7 @@ function has_(id, cmp) {
 function for_components(cmps, cb) {
   let ids = find_matching_ids(cmps);
   for (let id of ids) {
-    e = entities[id];
+    const e = entities[id];
     if (e == null || e == undefined) {
       // console.warn("Entity ", id, " not found")
       continue;
@@ -36,7 +36,7 @@ function maybe_ent(entity_id) {
 }
 
 function is_valid_entity(entity_id) {
-  e = maybe_ent(entity_id);
+  const e = maybe_ent(entity_id);
   if (e == null || e == undefined) {
     return false;
   }
@@ -46,7 +46,7 @@ function is_valid_entity(entity_id) {
 function to_ents(ids) {
   let ents = [];
   for (let id of ids) {
-    e = entities[id];
+    const e = entities[id];
     if (e == null || e == undefined) {
       // console.warn("Entity ", id, " not found")
       continue;
@@ -60,7 +60,7 @@ function find_closest_with_all(cmps, position, filter_fn) {
   let ids = find_matching_ids(cmps);
   let closest = null;
   for (let id of ids) {
-    e = entities[id];
+    const e = entities[id];
     if (e == null || e == undefined) {
       // console.warn("Entity ", id, " not found")
       continue;
@@ -88,7 +88,7 @@ function find_all_with(cmps, filter_fn) {
   let closest = null;
   let ents = [];
   for (let id of ids) {
-    e = entities[id];
+    const e = entities[id];
     if (e == null || e == undefined) {
       // console.warn("Entity ", id, " not found")
       continue;
