@@ -56,13 +56,13 @@ function make_house_button(y_off = 0) {
       };
       map_info.onBuildingModeClick = (mx, my) => {
         spawn_house(mx, my);
-        spend_amount(ItemType.Berry, 50);
+        spend_amount(ItemType.Berry, COSTS.house.amount);
       };
     },
     onHoverStart: (_entity) => {},
     onHoverEnd: (_entity) => {},
     validationFunction: (_entity) => {
-      return amount_in_storage(ItemType.Berry) >= SPAWN_ORE_COST;
+      return amount_in_storage(ItemType.Berry) >= COSTS.house.amount;
     },
   });
 }
@@ -82,7 +82,7 @@ function make_ship_speed_button(y_off = 0) {
     onHoverStart: (_entity) => {},
     onHoverEnd: (_entity) => {},
     validationFunction: () => {
-      return amount_in_storage(OreType.Iron) >= 15;
+      return amount_in_storage(OreType.Iron) >= COSTS.speed.amount;
     },
   });
 }
@@ -109,7 +109,7 @@ function make_unlock_farmer_button(y_off = 0) {
       global_random_data.max_allocation[RoleType.Farmer] = 1;
       global_random_data.role_allocation[RoleType.Farmer] = 1;
 
-      spend_amount(ItemType.Berry, 20);
+      spend_amount(ItemType.Berry, COSTS.farmer.amount);
       document.getElementById("plant_bush").remove();
 
       return {
@@ -121,7 +121,7 @@ function make_unlock_farmer_button(y_off = 0) {
     validationFunction: (_entity) => {
       const people = audit_roles();
       return (
-        amount_in_storage(ItemType.Berry) >= 20 && people[RoleType.Grunt] > 1
+        amount_in_storage(ItemType.Berry) >= COSTS.farmer.amount && people[RoleType.Grunt] > 1
       );
     },
   });
@@ -149,7 +149,7 @@ function make_unlock_home_builder_button(y_off = 0) {
       global_random_data.max_allocation[RoleType.Builder] = 1;
       global_random_data.role_allocation[RoleType.Builder] = 1;
 
-      spend_amount(ItemType.Berry, 100);
+      spend_amount(ItemType.Berry, COSTS.builder.amount);
 
       document.getElementById("build_house").remove();
 
@@ -162,7 +162,7 @@ function make_unlock_home_builder_button(y_off = 0) {
     validationFunction: (_entity) => {
       const people = audit_roles();
       return (
-        amount_in_storage(ItemType.Berry) >= 100 && people[RoleType.Grunt] > 1
+        amount_in_storage(ItemType.Berry) >= COSTS.builder.amount && people[RoleType.Grunt] > 1
       );
     },
   });

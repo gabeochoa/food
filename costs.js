@@ -1,0 +1,2 @@
+// CORRECT: single source for build/unlock costs - label, validation and spend all read COSTS (past: 8c1e2df, house validation used SPAWN_ORE_COST=5 but spent 50).
+const COSTS={house:{item:'berry',amount:50},bush:{item:'berry',amount:5},farmer:{item:'berry',amount:20},builder:{item:'berry',amount:100},builder_home:{item:'berry',amount:50},farmer_bush:{item:'berry',amount:10},speed:{item:'iron',amount:15}};

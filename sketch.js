@@ -190,18 +190,18 @@ function tick() {
       case RoleType.Builder:
         {
           if (canBuild.building_type != BuildingType.None) return;
-          if (amount_in_storage(ItemType.Berry) < 50) return;
+          if (amount_in_storage(ItemType.Berry) < COSTS.builder_home.amount) return;
           canBuild.building_type = BuildingType.Home;
-          spend_amount(ItemType.Berry, 50);
+          spend_amount(ItemType.Berry, COSTS.builder_home.amount);
           console.log("builder", entity.id, "gonna build soon :) ");
         }
         return;
       case RoleType.Farmer:
         {
           if (canBuild.building_type != BuildingType.None) return;
-          if (amount_in_storage(ItemType.Berry) < 10) return;
+          if (amount_in_storage(ItemType.Berry) < COSTS.farmer_bush.amount) return;
           canBuild.building_type = BuildingType.Bush;
-          spend_amount(ItemType.Berry, 10);
+          spend_amount(ItemType.Berry, COSTS.farmer_bush.amount);
           console.log("farmer ", entity.id, "gonna build soon :) ");
         }
         return;
